@@ -75,6 +75,12 @@ Use relative imports and avoid global state.
 - Use **black** and **ruff** formatting conventions.
 - Add **docstrings** and comments explaining rationale and data flow.
 
+### Logging
+- Use **module-level loggers**: `logger = logging.getLogger(__name__)`
+- **Never** call `logging.basicConfig()` in library code.
+- Use **%-formatting**: `logger.info("Loaded %d rows", len(df))` not f-strings.
+- **INFO**: User-facing operations. **DEBUG**: Implementation details. **WARNING**: Recoverable errors.
+
 ### Documentation Example
 ```python
 def compute_spread_momentum(spread: pd.Series, window: int = 5) -> pd.Series:
@@ -125,9 +131,12 @@ When generating code, the assistant should **infer module context from file path
 ```python
 # models/cdx_overlay_model.py
 
+import logging
 from ..data.loader import load_market_data
 from ..persistence.io import save_json
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 def compute_vix_cdx_gap(
     vix_df: pd.DataFrame,
@@ -158,10 +167,20 @@ def compute_vix_cdx_gap(
     -----
     Uses z-score normalization to make signals comparable across regimes.
     """
+    logger.info(
+        "Computing VIX-CDX gap: vix_rows=%d, cdx_rows=%d, lookback=%d",
+        len(vix_df),
+        len(cdx_df),
+        lookback,
+    )
+    
     vix_deviation = vix_df['VIX'] - vix_df['VIX'].rolling(lookback).mean()
     cdx_deviation = cdx_df['spread'] - cdx_df['spread'].rolling(lookback).mean()
     gap = vix_deviation - cdx_deviation
-    return gap / gap.rolling(lookback).std()
+    signal = gap / gap.rolling(lookback).std()
+    
+    logger.debug("Generated %d signal values", signal.notna().sum())
+    return signal
 ```
 
 ---
@@ -169,7 +188,8 @@ def compute_vix_cdx_gap(
 ## 🚫 The Agent Should Never
 
 - Use external databases or APIs (use Parquet/JSON only).  
-- Use old typing syntax (`Optional`, `Union`, `List`, `Dict`) - always use Python 3.13+ style.
+- Use old typing syntax (`Optional`, `Union`, `List`, `Dict`).
+- Call `logging.basicConfig()` in library code or use f-strings in log messages.
 - Hardcode file paths or credentials.  
 - Generate non‑deterministic results without a fixed random seed.  
 - Mix backtest logic with data ingestion.  
@@ -181,34 +201,47 @@ def compute_vix_cdx_gap(
 ## 🧪 Testing & Logging Expectations
 
 - All stochastic components must be **seeded deterministically**.  
-- Every backtest or signal computation must log:  
-  - Timestamp  
-  - Parameters  
-  - Version hash  
-- Include lightweight tests for data I/O, signal correctness, and regression.  
+- Every backtest or signal computation must log metadata (timestamp, parameters, version).
+- Include lightweight tests for data I/O, signal correctness, and regression.
+- Use module-level loggers: `logger = logging.getLogger(__name__)`
+- Log at **INFO** for user operations, **DEBUG** for details, **WARNING** for errors.
 
 Example:
 ```python
-metadata = {
-    "timestamp": datetime.now().isoformat(),
-    "params": params_dict,
-    "version": __version__,
-}
-save_json(metadata, "run_metadata.json")
+import logging
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
+
+def run_backtest(params: dict) -> dict:
+    """Run backtest with logging."""
+    logger.info("Starting backtest: params=%s", params)
+    
+    # ... backtest logic ...
+    
+    metadata = {
+        "timestamp": datetime.now().isoformat(),
+        "params": params,
+        "version": __version__,
+    }
+    save_json(metadata, "run_metadata.json")
+    
+    logger.info("Backtest complete: sharpe=%.2f, trades=%d", sharpe, n_trades)
+    return results
 ```
 
 ---
 
 ## 🔗 Recommended Agent Prompts
 
-When using Copilot Chat or VS Code inline completions, prefer prompts like:
+When using Copilot Chat or VS Code inline completions, prefer prompts like:
 
-- “Add a deterministic backtest class that tracks daily P&L and logs parameters.”  
-- “Refactor this data loader to follow project persistence standards.”  
-- “Write unit tests for this model to ensure reproducible signal outputs.”  
-- “Add Streamlit components to visualize signal performance.”  
+- "Add a deterministic backtest class that tracks daily P&L and logs parameters."  
+- "Refactor this data loader to follow project persistence standards."  
+- "Write unit tests for this model to ensure reproducible signal outputs."  
+- "Add Streamlit components to visualize signal performance."
 
-Avoid generic prompts like *“optimize this code”* — always specify layer and intent.
+Avoid generic prompts like *"optimize this code"* — always specify layer and intent.
 
 ---
 
@@ -221,5 +254,5 @@ It should:
 - Produce code ready for production research pipelines.
 
 > Maintained by **stabilefrisur**.  
-> Version 1.0 — Optimized for VS Code Agent Mode (Claude Sonnet 4.5 / GPT‑5)  
-> October 2025
+> Version 1.1 — Optimized for VS Code Agent Mode (Claude Sonnet 4.5 / GPT‑5)  
+> Last Updated: October 26, 2025
