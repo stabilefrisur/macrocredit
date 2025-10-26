@@ -243,7 +243,79 @@ def run_backtest(params: dict) -> dict:
 
 ---
 
-## 🔗 Recommended Agent Prompts
+## � Git Commit Standards
+
+Follow **Conventional Commits** format for consistency and automated changelog generation:
+
+### Format
+```
+<type>: <description>
+
+[optional body]
+```
+
+### Rules
+- **Type**: Lowercase, from the list below
+- **Description**: Capitalize first letter, no period at end, imperative mood ("Add" not "Added")
+- **Length**: Keep first line under 72 characters
+- **Body**: Optional, explain *why* not *what*, wrap at 72 characters
+
+### Types
+- `feat`: New feature or capability
+- `fix`: Bug fix or correction
+- `docs`: Documentation changes only
+- `refactor`: Code restructuring without behavior change
+- `test`: Adding or updating tests
+- `perf`: Performance improvement
+- `chore`: Maintenance (dependencies, tooling, config)
+- `style`: Formatting, missing semicolons (not CSS)
+
+### Examples
+
+✅ **Good:**
+```
+feat: Add VIX-CDX divergence signal computation
+
+Implements z-score normalized gap between equity vol and credit spreads
+to identify cross-asset risk sentiment divergence.
+```
+
+```
+refactor: Extract data loading to separate module
+
+Improves modularity and testability by separating I/O from computation.
+```
+
+```
+docs: Update persistence layer documentation
+```
+
+❌ **Bad:**
+```
+Added new feature
+```
+
+```
+Fix: bug in backtest
+```
+
+```
+update docs.
+```
+
+### Multi-file Commits
+When changing multiple files, use the most significant type and describe the overall change:
+```
+refactor: Modernize type hints to Python 3.13 syntax
+
+- Update copilot instructions with new standards
+- Add comprehensive Python guidelines document
+- Remove legacy Optional/Union usage examples
+```
+
+---
+
+## �🔗 Recommended Agent Prompts
 
 When using Copilot Chat or VS Code inline completions, prefer prompts like:
 
