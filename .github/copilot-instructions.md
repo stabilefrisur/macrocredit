@@ -1,13 +1,13 @@
-# 🧠 Copilot Instructions — Systematic Macro Credit Project (VS Code Agent Mode)
+# Copilot Instructions — Systematic Macro Credit Project (VS Code Agent Mode)
 
-## 🎯 Purpose
+## Purpose
 
 These instructions optimize **Copilot Chat and inline completions** in **VS Code Agent mode** (Claude Sonnet 4.5 / GPT‑5) for the *Systematic Macro Credit* project.  
 The goal is to ensure the AI assistant generates **clean, modular, and reproducible** Python code aligned with project architecture and investment research standards.
 
 ---
 
-## 🧩 Project Overview
+## Project Overview
 
 You are working within a **systematic fixed‑income research environment**.  
 The framework supports:
@@ -74,6 +74,14 @@ Use relative imports and avoid global state.
 - Use **built-in generics**: `list[str]` not `List[str]`, `dict[str, Any]` not `Dict[str, Any]`.
 - Use **black** and **ruff** formatting conventions.
 - Add **docstrings** and comments explaining rationale and data flow.
+- **No decorative emojis** in code or docstrings. Only ✅ and ❌ for clarity in examples.
+
+### Code Organization Philosophy
+- **Prefer functions over classes.** Default to pure functions for transformations, calculations, and data processing.
+- Only use classes when you need: (1) state management, (2) multiple related methods on shared state, (3) lifecycle management, or (4) plugin/interface patterns.
+- **Use `@dataclass` for data containers** (parameters, results, metrics) — not regular classes.
+- Use `@dataclass(frozen=True)` for immutable configuration/parameters.
+- Avoid "calculator" or "helper" classes that just wrap a single function.
 
 ### Logging
 - Use **module-level loggers**: `logger = logging.getLogger(__name__)`
@@ -194,7 +202,10 @@ def compute_vix_cdx_gap(
 - Generate non‑deterministic results without a fixed random seed.  
 - Mix backtest logic with data ingestion.  
 - Produce undocumented or untyped code.  
-- Add notebook cells or magic commands inside modules.  
+- Add notebook cells or magic commands inside modules.
+- Add decorative emojis to code, comments, or docstrings.
+- Create classes when a simple function would suffice.
+- Use regular classes for data containers instead of `@dataclass`.
 
 ---
 
