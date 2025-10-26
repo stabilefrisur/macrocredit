@@ -9,9 +9,9 @@ This script shows how to:
 """
 
 import logging
-import numpy as np
 import pandas as pd
 
+from example_data import generate_example_data
 from macrocredit.models import (
     compute_cdx_etf_basis,
     compute_cdx_vix_gap,
@@ -27,44 +27,6 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-
-def generate_synthetic_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """
-    Generate synthetic market data for demonstration.
-
-    Returns
-    -------
-    tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]
-        CDX, VIX, and ETF dataframes with realistic synthetic data.
-    """
-    logger.info("Generating synthetic market data")
-
-    dates = pd.date_range("2024-01-01", periods=252, freq="D")
-    np.random.seed(42)
-
-    # CDX IG 5Y spreads (random walk with drift)
-    cdx_spreads = 100 + np.cumsum(np.random.randn(252) * 2)
-    cdx_df = pd.DataFrame({"spread": cdx_spreads}, index=dates)
-
-    # VIX levels (mean-reverting around 15)
-    vix_levels = 15 + np.cumsum(np.random.randn(252) * 0.8)
-    vix_levels = np.clip(vix_levels, 10, 80)  # Realistic bounds
-    vix_df = pd.DataFrame({"close": vix_levels}, index=dates)
-
-    # ETF spread-equivalent (correlated with CDX but with flow noise)
-    etf_spreads = cdx_spreads + np.random.randn(252) * 5
-    etf_df = pd.DataFrame({"close": etf_spreads}, index=dates)
-
-    logger.info(
-        "Generated %d days of data: CDX mean=%.1f, VIX mean=%.1f, ETF mean=%.1f",
-        len(dates),
-        cdx_spreads.mean(),
-        vix_levels.mean(),
-        etf_spreads.mean(),
-    )
-
-    return cdx_df, vix_df, etf_df
 
 
 def compute_signals(
@@ -158,7 +120,7 @@ def main() -> None:
     logger.info("=== Models Layer Demo ===")
 
     # Generate synthetic data
-    cdx_df, vix_df, etf_df = generate_synthetic_data()
+    cdx_df, vix_df, etf_df = generate_example_data(periods=252)
 
     # Compute individual signals
     basis, gap, momentum = compute_signals(cdx_df, vix_df, etf_df)

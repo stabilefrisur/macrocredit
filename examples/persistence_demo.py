@@ -2,9 +2,9 @@
 
 import logging
 import pandas as pd
-import numpy as np
 from datetime import datetime
 
+from example_data import generate_persistence_data
 from macrocredit.persistence import (
     save_parquet,
     load_parquet,
@@ -31,52 +31,21 @@ def create_sample_data() -> None:
     """
     print("Creating sample market data...")
 
-    # Generate date range
-    dates = pd.date_range("2024-01-01", "2024-10-25", freq="B")  # Business days
+    # Generate all datasets using centralized helper
+    datasets = generate_persistence_data(periods=209)
 
-    # CDX IG 5Y spreads
-    cdx_ig_5y = pd.DataFrame(
-        {
-            "spread": 70 + np.random.normal(0, 5, len(dates)).cumsum() * 0.5,
-            "volume": np.random.randint(1000, 5000, len(dates)),
-        },
-        index=dates,
-    )
-    save_parquet(cdx_ig_5y, DATA_DIR / "raw" / "cdx_ig_5y.parquet")
-    print(f"  ✓ Saved CDX IG 5Y: {len(cdx_ig_5y)} rows")
+    # Save each dataset
+    save_parquet(datasets["cdx_ig_5y"], DATA_DIR / "raw" / "cdx_ig_5y.parquet")
+    print(f"  ✓ Saved CDX IG 5Y: {len(datasets['cdx_ig_5y'])} rows")
 
-    # CDX HY 5Y spreads
-    cdx_hy_5y = pd.DataFrame(
-        {
-            "spread": 350 + np.random.normal(0, 20, len(dates)).cumsum() * 0.8,
-            "volume": np.random.randint(500, 2000, len(dates)),
-        },
-        index=dates,
-    )
-    save_parquet(cdx_hy_5y, DATA_DIR / "raw" / "cdx_hy_5y.parquet")
-    print(f"  ✓ Saved CDX HY 5Y: {len(cdx_hy_5y)} rows")
+    save_parquet(datasets["cdx_hy_5y"], DATA_DIR / "raw" / "cdx_hy_5y.parquet")
+    print(f"  ✓ Saved CDX HY 5Y: {len(datasets['cdx_hy_5y'])} rows")
 
-    # VIX index
-    vix = pd.DataFrame(
-        {
-            "close": 15 + np.random.normal(0, 3, len(dates)).cumsum() * 0.3,
-            "volume": np.random.randint(50000, 200000, len(dates)),
-        },
-        index=dates,
-    )
-    save_parquet(vix, DATA_DIR / "raw" / "vix.parquet")
-    print(f"  ✓ Saved VIX: {len(vix)} rows")
+    save_parquet(datasets["vix"], DATA_DIR / "raw" / "vix.parquet")
+    print(f"  ✓ Saved VIX: {len(datasets['vix'])} rows")
 
-    # HYG ETF
-    hyg = pd.DataFrame(
-        {
-            "close": 80 + np.random.normal(0, 0.5, len(dates)).cumsum() * 0.1,
-            "volume": np.random.randint(5000000, 15000000, len(dates)),
-        },
-        index=dates,
-    )
-    save_parquet(hyg, DATA_DIR / "raw" / "hyg_etf.parquet")
-    print(f"  ✓ Saved HYG ETF: {len(hyg)} rows")
+    save_parquet(datasets["hyg_etf"], DATA_DIR / "raw" / "hyg_etf.parquet")
+    print(f"  ✓ Saved HYG ETF: {len(datasets['hyg_etf'])} rows")
 
 
 def register_datasets() -> None:
@@ -141,7 +110,7 @@ def demonstrate_registry_usage() -> None:
 
     # Get detailed info
     info = registry.get_dataset_info("cdx_ig_5y")
-    print(f"\n  CDX IG 5Y details:")
+    print("\n  CDX IG 5Y details:")
     print(f"    Date range: {info['start_date'][:10]} to {info['end_date'][:10]}")
     print(f"    Rows: {info['row_count']}")
     print(f"    Tenor: {info['tenor']}")

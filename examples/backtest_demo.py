@@ -10,9 +10,7 @@ This script shows how to:
 
 import logging
 
-import numpy as np
-import pandas as pd
-
+from example_data import generate_example_data
 from macrocredit.models import (
     aggregate_signals,
     compute_cdx_etf_basis,
@@ -35,49 +33,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def generate_market_data() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """
-    Generate synthetic market data with realistic dynamics.
-
-    Returns
-    -------
-    tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]
-        CDX, VIX, and ETF dataframes.
-    """
-    logger.info("Generating synthetic market data")
-
-    dates = pd.date_range("2023-01-01", periods=504, freq="D")
-    np.random.seed(42)
-
-    # CDX IG 5Y spreads with regime shifts
-    cdx_base = 100
-    cdx_shocks = [0] * 150 + [20] * 100 + [-15] * 150 + [10] * 104
-    cdx_spreads = cdx_base + np.array(cdx_shocks) + np.cumsum(np.random.randn(504) * 1.5)
-    cdx_df = pd.DataFrame({"spread": cdx_spreads}, index=dates)
-
-    # VIX with mean reversion and spikes
-    vix_base = 15
-    vix_spikes = [0] * 150 + [25] * 50 + [0] * 200 + [15] * 104
-    vix_levels = vix_base + np.array(vix_spikes) + np.cumsum(np.random.randn(504) * 0.5)
-    vix_levels = np.clip(vix_levels, 10, 60)
-    vix_df = pd.DataFrame({"close": vix_levels}, index=dates)
-
-    # ETF with flow-driven basis vs CDX
-    etf_basis = np.random.randn(504) * 3
-    etf_spreads = cdx_spreads + etf_basis
-    etf_df = pd.DataFrame({"close": etf_spreads}, index=dates)
-
-    logger.info(
-        "Generated %d days: CDX mean=%.1f, VIX mean=%.1f, ETF-CDX basis mean=%.2f",
-        len(dates),
-        cdx_spreads.mean(),
-        vix_levels.mean(),
-        etf_basis.mean(),
-    )
-
-    return cdx_df, vix_df, etf_df
-
-
 def main() -> None:
     """Run complete backtest demonstration."""
     print("\n" + "=" * 70)
@@ -86,7 +41,10 @@ def main() -> None:
 
     # 1. Generate market data
     print("\n[1] Generating market data...")
-    cdx_df, vix_df, etf_df = generate_market_data()
+    cdx_df, vix_df, etf_df = generate_example_data(
+        start_date="2023-01-01",
+        periods=504,
+    )
     print(f"    Generated {len(cdx_df)} days of synthetic data")
 
     # 2. Compute signals
