@@ -116,13 +116,48 @@ def compute_spread_momentum(spread: pd.Series, window: int = 5) -> pd.Series:
 | Context | Preferred Behavior |
 |----------|--------------------|
 | Editing `/data/` | Focus on reproducible data loading, cleaning, and transformation. Avoid strategy logic. |
-| Editing `/models/` | Focus on signal functions and strategy modules. Use clean abstractions (`BaseModel`). |
+| Editing `/models/` | Focus on signal functions and strategy modules. Use clean abstractions. **Signal convention: positive values = long credit risk (buy CDX).** |
 | Editing `/backtest/` | Implement transparent, deterministic backtest logic. Include metadata logging. |
 | Editing `/visualization/` | Generate reusable Plotly/Streamlit components. Separate plotting from computation. |
 | Editing `/persistence/` | Handle Parquet/JSON I/O and registry management. No database dependencies. |
 | Editing `/tests/` | Write unit tests for determinism, type safety, and reproducibility. |
 
 When generating code, the assistant should **infer module context from file path** and **adhere to functional boundaries** automatically.
+
+### Signal Sign Convention (Models Layer)
+
+**All model signals must follow a consistent sign convention:**
+
+- **Positive signal values** → Long credit risk → Buy CDX (sell protection)
+- **Negative signal values** → Short credit risk → Sell CDX (buy protection)
+
+This convention ensures that:
+1. Signals can be aggregated without confusion about directionality
+2. Positive composite scores clearly indicate bullish credit positioning
+3. Risk limits and thresholds apply consistently across all signals
+
+**Signal naming convention:**
+
+Use consistent signal names throughout the models layer:
+- **Signal names:** `cdx_etf_basis`, `cdx_vix_gap`, `spread_momentum`
+- **Function names:** `compute_cdx_etf_basis`, `compute_cdx_vix_gap`, `compute_spread_momentum`
+- **Function parameters:** `cdx_etf_basis`, `cdx_vix_gap`, `spread_momentum`
+- **Config attributes:** `cdx_etf_basis_weight`, `cdx_vix_gap_weight`, `spread_momentum_weight`
+- **DataFrame columns:** `cdx_etf_basis`, `cdx_vix_gap`, `spread_momentum`
+
+**Implementation guidelines:**
+- When creating new signals, verify the sign matches this convention
+- Use consistent signal names across functions, parameters, and configuration
+- Document signal interpretation clearly in docstrings
+- Use negation (`-`) when raw calculations naturally produce inverse signs
+- Test signal directionality with simple synthetic data
+
+**Example:**
+```python
+# Spread momentum: tightening = bullish = positive signal
+spread_change = current_spread - past_spread  # Negative when tightening
+signal = -spread_change / volatility  # Negated to match convention
+```
 
 ---
 
