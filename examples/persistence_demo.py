@@ -186,7 +186,8 @@ def save_run_metadata() -> None:
         "output_path": DATA_DIR / "processed" / "signals.parquet",
     }
 
-    output_path = save_json(metadata, DATA_DIR / "logs" / "run_metadata.json")
+    from macrocredit.config import LOGS_DIR
+    output_path = save_json(metadata, LOGS_DIR / "run_metadata.json")
     print(f"  ✓ Saved metadata to {output_path}")
 
     # Load it back

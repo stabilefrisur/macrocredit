@@ -151,15 +151,6 @@ uv run python examples/persistence_demo.py
 4. **Modular**: Clean separation between Parquet, JSON, and registry
 5. **Tested**: 100% test coverage with edge cases
 
-## Next Steps
-
-With the persistence layer complete, we can now build:
-
-1. **Data Layer**: Loaders and transformers for CDX/VIX/ETF data
-2. **Visualization Layer**: Plotly/Streamlit components
-3. **Models Layer**: Signal generation (after data layer)
-4. **Backtest Layer**: Strategy evaluation (after models)
-
 ---
 
 **Maintained by:** stabilefrisur  

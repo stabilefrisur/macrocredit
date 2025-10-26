@@ -12,16 +12,22 @@ venv/
 env/
 
 # Data files (should not be in version control)
-src/data/
-data/
+# Allow directory structure but ignore data files
 *.parquet
 *.hdf5
 *.h5
+*.csv
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+# Keep registry.json for tracking dataset metadata
+!data/registry.json
 
 # Logs
-logs/
 *.log
-src/logs/
+logs/*
+!logs/.gitkeep
 
 # Test and coverage artifacts
 .pytest_cache/

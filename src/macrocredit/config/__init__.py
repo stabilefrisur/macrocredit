@@ -9,7 +9,8 @@ from pathlib import Path
 from typing import Final
 
 # Project root and data directories
-PROJECT_ROOT: Final[Path] = Path(__file__).parent.parent.parent
+# From src/macrocredit/config/__init__.py -> src/macrocredit -> src -> project_root
+PROJECT_ROOT: Final[Path] = Path(__file__).parent.parent.parent.parent
 DATA_DIR: Final[Path] = PROJECT_ROOT / "data"
 REGISTRY_PATH: Final[Path] = DATA_DIR / "registry.json"
 LOGS_DIR: Final[Path] = PROJECT_ROOT / "logs"

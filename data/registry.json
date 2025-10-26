@@ -1,0 +1,55 @@
+{
+  "cdx_hy_5y": {
+    "end_date": "2024-10-25T00:00:00",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\cdx_hy_5y.parquet",
+    "instrument": "CDX.NA.HY",
+    "metadata": {
+      "frequency": "daily",
+      "source": "synthetic"
+    },
+    "registered_at": "2025-10-26T15:30:10.847478",
+    "row_count": 215,
+    "start_date": "2024-01-01T00:00:00",
+    "tenor": "5Y"
+  },
+  "cdx_ig_5y": {
+    "end_date": "2024-10-25T00:00:00",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\cdx_ig_5y.parquet",
+    "instrument": "CDX.NA.IG",
+    "metadata": {
+      "frequency": "daily",
+      "source": "synthetic"
+    },
+    "registered_at": "2025-10-26T15:30:10.837300",
+    "row_count": 215,
+    "start_date": "2024-01-01T00:00:00",
+    "tenor": "5Y"
+  },
+  "hyg_etf": {
+    "end_date": "2024-10-25T00:00:00",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\hyg_etf.parquet",
+    "instrument": "HYG",
+    "metadata": {
+      "frequency": "daily",
+      "source": "synthetic",
+      "type": "ETF"
+    },
+    "registered_at": "2025-10-26T15:30:10.868866",
+    "row_count": 215,
+    "start_date": "2024-01-01T00:00:00",
+    "tenor": null
+  },
+  "vix": {
+    "end_date": "2024-10-25T00:00:00",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\vix.parquet",
+    "instrument": "VIX",
+    "metadata": {
+      "frequency": "daily",
+      "source": "synthetic"
+    },
+    "registered_at": "2025-10-26T15:30:10.858192",
+    "row_count": 215,
+    "start_date": "2024-01-01T00:00:00",
+    "tenor": null
+  }
+}
