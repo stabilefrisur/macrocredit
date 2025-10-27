@@ -1,7 +1,27 @@
 """
-Demonstration of data layer functionality.
+Data Layer Demonstration - Loading, Validation, and Transformation
 
-Generates sample data, loads it, transforms it, and shows usage patterns.
+Demonstrates the complete data processing workflow:
+1. Generate synthetic CDX, VIX, and ETF market data
+2. Save data to Parquet files
+3. Load data with schema validation:
+   - CDX index spreads
+   - VIX volatility levels
+   - ETF prices (converted to spread-equivalent)
+4. Transform data:
+   - Compute spread changes (diff and percentage)
+   - Compute price returns (simple and log)
+   - Align multiple time series (inner/outer join)
+   - Normalize signals with rolling z-scores
+5. Validate data quality and business logic constraints
+
+Output: Loaded and transformed DataFrames with validation results
+
+Key Features:
+  - Type-safe loading with DatetimeIndex enforcement
+  - Schema validation (required columns, data types)
+  - Business logic checks (spread/price bounds)
+  - Pure transformation functions with no side effects
 """
 
 import logging

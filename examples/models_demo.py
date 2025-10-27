@@ -1,11 +1,20 @@
 """
-Demonstration of the models layer for CDX overlay strategy.
+Models Layer Demonstration - Signal Generation and Aggregation
 
-This script shows how to:
-1. Generate synthetic market data
-2. Compute individual signals
-3. Aggregate signals into composite score
-4. Generate positioning recommendations
+Demonstrates the complete signal generation workflow:
+1. Generate synthetic CDX, VIX, and ETF market data (252 trading days)
+2. Compute three individual signals:
+   - CDX-ETF basis: Arbitrage signal from cash-derivative spread
+   - CDX-VIX gap: Cross-asset risk sentiment divergence
+   - Spread momentum: Short-term trend in credit spreads
+3. Aggregate signals with custom weights into composite score
+4. Generate position recommendations from composite score
+
+Output: Signal statistics, position distribution, and sample recommendations
+
+Note: All signals follow the convention:
+  - Positive values → Long credit risk (buy CDX/sell protection)
+  - Negative values → Short credit risk (sell CDX/buy protection)
 """
 
 import logging

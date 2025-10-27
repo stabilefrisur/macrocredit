@@ -1,4 +1,23 @@
-"""Example usage of the persistence layer."""
+"""
+Persistence Layer Demonstration - Data I/O and Registry Management
+
+Demonstrates the complete data persistence workflow:
+1. Generate synthetic market data for multiple instruments
+   - CDX IG, CDX HY, VIX, HYG ETF (209 trading days)
+2. Save datasets to Parquet files with metadata
+3. Register datasets in central JSON registry
+4. Query registry by instrument type and date range
+5. Load data from registry with validation
+6. Save/load JSON metadata and run artifacts
+
+Output: Parquet files in data/raw/, registry in data/registry.json
+
+Key Features:
+  - Type-safe Parquet I/O with schema validation
+  - Central registry for dataset discovery
+  - Metadata tracking (instrument, frequency, date range)
+  - Efficient columnar storage for time series
+"""
 
 import logging
 import pandas as pd

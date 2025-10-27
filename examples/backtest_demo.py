@@ -1,11 +1,26 @@
 """
-Demonstration of the backtest layer for CDX overlay strategy.
+Backtest Layer Demonstration - Complete Strategy Evaluation
 
-This script shows how to:
-1. Generate synthetic market data and signals
-2. Run a backtest with custom configuration
-3. Compute performance metrics
-4. Display results and analyze trade history
+Demonstrates end-to-end backtest workflow:
+1. Generate synthetic market data (504 trading days, ~2 years)
+2. Compute individual signals (basis, gap, momentum)
+3. Aggregate signals with custom weights
+4. Run backtest with entry/exit rules and transaction costs
+5. Compute comprehensive performance metrics:
+   - Risk-adjusted returns (Sharpe, Sortino, Calmar ratios)
+   - Drawdown analysis
+   - Win rate and profit factor
+   - Trade statistics and holding periods
+6. Analyze trade history and exposure distribution
+
+Output: Performance metrics, P&L analysis, trade-by-trade details
+
+Configuration:
+  - Entry threshold: 1.5 (absolute z-score)
+  - Exit threshold: 0.75 (absolute z-score)
+  - Position size: $10MM notional
+  - Transaction cost: 1.0 bps
+  - DV01: $4,750 per $1MM notional
 """
 
 import logging
