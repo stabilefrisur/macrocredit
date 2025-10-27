@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from macrocredit.models.aggregator import aggregate_signals
-from macrocredit.models.config import AggregatorConfig
+from macrocredit.models.config import AggregatorConfig, SignalConfig
 
 
 @pytest.fixture
@@ -148,3 +148,29 @@ def test_aggregator_config_threshold_validation() -> None:
             spread_momentum_weight=0.34,
             threshold=-1.0,
         )
+
+
+def test_signal_config_validation() -> None:
+    """Test that SignalConfig validates parameters."""
+    # Valid config
+    config = SignalConfig(lookback=20, min_periods=10)
+    assert config is not None
+
+    # Invalid lookback (non-positive)
+    with pytest.raises(ValueError, match="lookback must be positive"):
+        SignalConfig(lookback=0, min_periods=5)
+
+    with pytest.raises(ValueError, match="lookback must be positive"):
+        SignalConfig(lookback=-10, min_periods=5)
+
+    # Invalid min_periods (non-positive)
+    with pytest.raises(ValueError, match="min_periods must be positive"):
+        SignalConfig(lookback=20, min_periods=0)
+
+    with pytest.raises(ValueError, match="min_periods must be positive"):
+        SignalConfig(lookback=20, min_periods=-5)
+
+    # Invalid min_periods > lookback
+    with pytest.raises(ValueError, match="min_periods.*cannot exceed lookback"):
+        SignalConfig(lookback=10, min_periods=15)
+

@@ -21,6 +21,17 @@ class SignalConfig:
     lookback: int = 20
     min_periods: int = 10
 
+    def __post_init__(self) -> None:
+        """Validate configuration parameters."""
+        if self.lookback <= 0:
+            raise ValueError(f"lookback must be positive, got {self.lookback}")
+        if self.min_periods <= 0:
+            raise ValueError(f"min_periods must be positive, got {self.min_periods}")
+        if self.min_periods > self.lookback:
+            raise ValueError(
+                f"min_periods ({self.min_periods}) cannot exceed lookback ({self.lookback})"
+            )
+
 
 @dataclass(frozen=True)
 class AggregatorConfig:
