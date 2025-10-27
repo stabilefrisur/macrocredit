@@ -88,7 +88,8 @@ Typical holding period is **days to a few weeks**, with moderate turnover aligne
 - Target a **single tactical positioning score** dictating net CDX exposure.  
 
 **Trade Expression:**  
-- **Directional exposure:** Enter long or short protection positions when composite score exceeds thresholds.  
+- **Positive composite score:** Long credit risk → Buy CDX (sell protection)
+- **Negative composite score:** Short credit risk → Sell CDX (buy protection)
 - **Neutral/reduced exposure:** When signals are weak or contradictory.  
 
 **Update Frequency:**  
