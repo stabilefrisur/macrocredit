@@ -93,10 +93,12 @@ def generate_positions(
     def classify_position(score: float) -> str:
         if pd.isna(score):
             return "no_signal"
+        # Signal convention: positive = long credit risk (buy CDX)
+        #                    negative = short credit risk (sell CDX)
         if score > threshold:
-            return "short_credit"
-        if score < -threshold:
             return "long_credit"
+        if score < -threshold:
+            return "short_credit"
         return "neutral"
 
     positions = composite.apply(classify_position)

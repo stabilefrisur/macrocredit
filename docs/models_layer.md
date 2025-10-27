@@ -205,10 +205,11 @@ composite = w1 * signal1 + w2 * signal2 + w3 * signal3
 ### Position Mapping
 
 ```python
+# Signal convention: positive = long credit risk (buy CDX)
 if composite > threshold:
-    position = "short_credit"  # Sell CDX, buy protection
-elif composite < -threshold:
     position = "long_credit"   # Buy CDX, sell protection
+elif composite < -threshold:
+    position = "short_credit"  # Sell CDX, buy protection
 else:
     position = "neutral"
 ```
