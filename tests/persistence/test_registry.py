@@ -6,7 +6,7 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime
 
-from macrocredit.persistence.registry import DataRegistry
+from macrocredit.persistence.registry import DataRegistry, DatasetEntry
 from macrocredit.persistence.parquet_io import save_parquet
 
 
@@ -328,3 +328,186 @@ class TestRegistryRepr:
         )
         repr_str = repr(registry)
         assert "datasets=1" in repr_str
+
+
+class TestDatasetEntry:
+    """Test cases for DatasetEntry dataclass."""
+
+    def test_dataclass_creation(self):
+        """Test creating DatasetEntry with all fields."""
+        entry = DatasetEntry(
+            instrument="CDX.NA.IG",
+            file_path="data/cdx_ig_5y.parquet",
+            registered_at="2024-10-25T14:30:00",
+            tenor="5Y",
+            start_date="2024-01-01T00:00:00",
+            end_date="2024-10-25T00:00:00",
+            row_count=215,
+            metadata={"source": "Bloomberg"},
+        )
+
+        assert entry.instrument == "CDX.NA.IG"
+        assert entry.tenor == "5Y"
+        assert entry.row_count == 215
+        assert entry.metadata["source"] == "Bloomberg"
+
+    def test_dataclass_defaults(self):
+        """Test DatasetEntry with default values."""
+        entry = DatasetEntry(
+            instrument="VIX",
+            file_path="data/vix.parquet",
+            registered_at="2024-10-25T14:30:00",
+        )
+
+        assert entry.instrument == "VIX"
+        assert entry.tenor is None
+        assert entry.start_date is None
+        assert entry.end_date is None
+        assert entry.row_count is None
+        assert entry.last_updated is None
+        assert entry.metadata == {}
+
+    def test_to_dict(self):
+        """Test converting DatasetEntry to dictionary."""
+        entry = DatasetEntry(
+            instrument="CDX.NA.IG",
+            file_path="data/test.parquet",
+            registered_at="2024-10-25T14:30:00",
+            tenor="5Y",
+            row_count=100,
+        )
+
+        data = entry.to_dict()
+
+        assert isinstance(data, dict)
+        assert data["instrument"] == "CDX.NA.IG"
+        assert data["tenor"] == "5Y"
+        assert data["row_count"] == 100
+        assert data["start_date"] is None
+
+    def test_from_dict(self):
+        """Test creating DatasetEntry from dictionary."""
+        data = {
+            "instrument": "CDX.NA.HY",
+            "file_path": "data/cdx_hy.parquet",
+            "registered_at": "2024-10-25T14:30:00",
+            "tenor": "5Y",
+            "start_date": "2024-01-01T00:00:00",
+            "end_date": "2024-10-25T00:00:00",
+            "row_count": 200,
+            "last_updated": None,
+            "metadata": {"frequency": "daily"},
+        }
+
+        entry = DatasetEntry.from_dict(data)
+
+        assert entry.instrument == "CDX.NA.HY"
+        assert entry.tenor == "5Y"
+        assert entry.row_count == 200
+        assert entry.metadata["frequency"] == "daily"
+
+    def test_roundtrip_dict_conversion(self):
+        """Test converting to dict and back preserves data."""
+        original = DatasetEntry(
+            instrument="VIX",
+            file_path="data/vix.parquet",
+            registered_at="2024-10-25T14:30:00",
+            row_count=500,
+            metadata={"source": "CBOE", "type": "index"},
+        )
+
+        data = original.to_dict()
+        restored = DatasetEntry.from_dict(data)
+
+        assert restored.instrument == original.instrument
+        assert restored.file_path == original.file_path
+        assert restored.row_count == original.row_count
+        assert restored.metadata == original.metadata
+
+
+class TestGetDatasetEntry:
+    """Test cases for get_dataset_entry method."""
+
+    def test_get_dataset_entry_basic(self, registry, sample_timeseries, temp_data_dir):
+        """Test retrieving dataset as DatasetEntry object."""
+        file_path = temp_data_dir / "cdx_ig_5y.parquet"
+        save_parquet(sample_timeseries, file_path)
+
+        registry.register_dataset(
+            name="cdx_ig_5y",
+            file_path=file_path,
+            instrument="CDX.NA.IG",
+            tenor="5Y",
+        )
+
+        entry = registry.get_dataset_entry("cdx_ig_5y")
+
+        assert isinstance(entry, DatasetEntry)
+        assert entry.instrument == "CDX.NA.IG"
+        assert entry.tenor == "5Y"
+        assert entry.row_count == 30
+
+    def test_get_dataset_entry_with_metadata(self, registry, sample_timeseries, temp_data_dir):
+        """Test retrieving dataset with metadata."""
+        file_path = temp_data_dir / "vix.parquet"
+        save_parquet(sample_timeseries, file_path)
+
+        metadata = {"source": "CBOE", "frequency": "daily"}
+        registry.register_dataset(
+            name="vix_index",
+            file_path=file_path,
+            instrument="VIX",
+            metadata=metadata,
+        )
+
+        entry = registry.get_dataset_entry("vix_index")
+
+        assert entry.instrument == "VIX"
+        assert entry.tenor is None
+        assert entry.metadata["source"] == "CBOE"
+        assert entry.metadata["frequency"] == "daily"
+
+    def test_get_dataset_entry_nonexistent_raises(self, registry):
+        """Test that getting nonexistent entry raises KeyError."""
+        with pytest.raises(KeyError, match="Dataset 'nonexistent' not found"):
+            registry.get_dataset_entry("nonexistent")
+
+    def test_get_dataset_entry_type_safety(self, registry, sample_timeseries, temp_data_dir):
+        """Test that DatasetEntry provides type-safe attribute access."""
+        file_path = temp_data_dir / "test.parquet"
+        save_parquet(sample_timeseries, file_path)
+
+        registry.register_dataset(
+            name="test",
+            file_path=file_path,
+            instrument="TEST",
+            tenor="5Y",
+        )
+
+        entry = registry.get_dataset_entry("test")
+
+        # Test attribute access (would give IDE autocomplete)
+        assert hasattr(entry, "instrument")
+        assert hasattr(entry, "tenor")
+        assert hasattr(entry, "file_path")
+        assert hasattr(entry, "row_count")
+        assert hasattr(entry, "metadata")
+
+    def test_get_dataset_entry_vs_get_dataset_info(self, registry, sample_timeseries, temp_data_dir):
+        """Test that both methods return equivalent data."""
+        file_path = temp_data_dir / "test.parquet"
+        save_parquet(sample_timeseries, file_path)
+
+        registry.register_dataset(
+            name="test",
+            file_path=file_path,
+            instrument="TEST",
+            tenor="5Y",
+        )
+
+        entry = registry.get_dataset_entry("test")
+        info = registry.get_dataset_info("test")
+
+        # Convert entry to dict and compare
+        assert entry.to_dict() == info
+

@@ -11,6 +11,7 @@ from macrocredit.persistence import (
     save_json,
     load_json,
     DataRegistry,
+    DatasetEntry,
 )
 from macrocredit.config import DATA_DIR, REGISTRY_PATH
 
@@ -108,12 +109,21 @@ def demonstrate_registry_usage() -> None:
     cdx_datasets = [d for d in all_datasets if "cdx" in d]
     print(f"  CDX instruments: {cdx_datasets}")
 
-    # Get detailed info
-    info = registry.get_dataset_info("cdx_ig_5y")
+    # Get detailed info using type-safe dataclass
+    entry = registry.get_dataset_entry("cdx_ig_5y")
     print("\n  CDX IG 5Y details:")
-    print(f"    Date range: {info['start_date'][:10]} to {info['end_date'][:10]}")
-    print(f"    Rows: {info['row_count']}")
-    print(f"    Tenor: {info['tenor']}")
+    print(f"    Type: {type(entry).__name__}")
+    print(f"    Instrument: {entry.instrument}")
+    print(f"    Tenor: {entry.tenor}")
+    print(f"    Date range: {entry.start_date[:10]} to {entry.end_date[:10]}")
+    print(f"    Rows: {entry.row_count}")
+    print(f"    Metadata: {entry.metadata}")
+    
+    # Demonstrate type-safe attribute access benefits
+    print("\n  Type-safe benefits:")
+    print("    - IDE autocomplete works for all attributes ✓")
+    print(f"    - Typed attributes: {type(entry.instrument).__name__}, {type(entry.row_count).__name__}")
+    print("    - No KeyError risk from typos ✓")
 
 
 def demonstrate_data_loading() -> None:
@@ -164,6 +174,42 @@ def save_run_metadata() -> None:
     print(f"  ✓ Verified: Run ID = {loaded['run_id']}")
 
 
+def demonstrate_dataclass_features() -> None:
+    """Demonstrate DatasetEntry dataclass features."""
+    print("\nDemonstrating DatasetEntry dataclass...")
+    
+    registry = DataRegistry(REGISTRY_PATH, DATA_DIR)
+    
+    # Get multiple entries and work with them type-safely
+    print("\n  Processing multiple datasets:")
+    for name in ["cdx_ig_5y", "cdx_hy_5y", "vix"]:
+        entry = registry.get_dataset_entry(name)
+        print(f"    {entry.instrument:12s} ({entry.tenor or 'N/A':3s}): {entry.row_count:3d} rows")
+    
+    # Demonstrate conversion methods
+    print("\n  Dataclass conversion methods:")
+    entry = registry.get_dataset_entry("hyg_etf")
+    
+    # Convert to dict for JSON serialization
+    entry_dict = entry.to_dict()
+    print(f"    to_dict(): {type(entry_dict).__name__} with {len(entry_dict)} keys")
+    
+    # Recreate from dict
+    restored = DatasetEntry.from_dict(entry_dict)
+    print(f"    from_dict(): {type(restored).__name__}")
+    print(f"    Roundtrip preserves data: {restored.instrument == entry.instrument}")
+    
+    # Show practical use case: filtering datasets by row count
+    print("\n  Practical example - filter by row count:")
+    all_names = registry.list_datasets()
+    large_datasets = [
+        name for name in all_names
+        if registry.get_dataset_entry(name).row_count and 
+           registry.get_dataset_entry(name).row_count > 100
+    ]
+    print(f"    Datasets with >100 rows: {large_datasets}")
+
+
 def main() -> None:
     """Run all persistence layer demonstrations."""
     print("=" * 60)
@@ -173,11 +219,19 @@ def main() -> None:
     create_sample_data()
     register_datasets()
     demonstrate_registry_usage()
+    demonstrate_dataclass_features()
     demonstrate_data_loading()
     save_run_metadata()
 
     print("\n" + "=" * 60)
     print("Demo completed successfully!")
+    print("=" * 60)
+    print("\nKey Features Demonstrated:")
+    print("  ✓ Parquet I/O with compression and filtering")
+    print("  ✓ JSON I/O with datetime/Path support")
+    print("  ✓ DataRegistry for dataset catalog management")
+    print("  ✓ DatasetEntry dataclass for type-safe access")
+    print("  ✓ Registry queries and filtering")
     print("=" * 60)
 
 

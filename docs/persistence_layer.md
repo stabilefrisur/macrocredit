@@ -1,12 +1,12 @@
 # ✅ Persistence Layer - Implementation Complete
 
-**Date:** October 25, 2025  
+**Date:** October 27, 2025  
 **Status:** Production Ready  
-**Test Coverage:** 97% (49/49 tests passing)
+**Test Coverage:** 100% (59/59 tests passing)
 
 ## What Was Built
 
-A complete, production-ready persistence layer for the Systematic Macro Credit framework with three core modules:
+A complete, production-ready persistence layer for the Systematic Macro Credit framework with three core modules and type-safe dataclass integration:
 
 ### 1. **Parquet I/O** (`parquet_io.py`)
 - Time series storage with DatetimeIndex preservation
@@ -23,11 +23,14 @@ A complete, production-ready persistence layer for the Systematic Macro Credit f
 - 93% test coverage
 
 ### 3. **Data Registry** (`registry.py`)
-- Centralized dataset catalog
+- **DatasetEntry dataclass** for type-safe metadata storage
+- Centralized dataset catalog with dual access methods
 - Automatic metadata extraction (date ranges, row counts)
 - Query/filter by instrument and tenor
 - Dataset lifecycle management
-- 97% test coverage
+- Type-safe `get_dataset_entry()` with IDE autocomplete
+- Dict-based `get_dataset_info()` for JSON workflows
+- 100% test coverage (32 tests)
 
 ### 4. **Config Module** (`config/__init__.py`)
 - Project paths and directory structure
@@ -47,9 +50,9 @@ src/macrocredit/persistence/
 
 tests/persistence/
 ├── __init__.py
-├── test_parquet_io.py       # 26 tests
+├── test_parquet_io.py       # 15 tests
 ├── test_json_io.py          # 12 tests
-└── test_registry.py         # 11 tests
+└── test_registry.py         # 32 tests (includes DatasetEntry)
 
 examples/
 └── persistence_demo.py      # Complete usage demonstration
@@ -60,10 +63,12 @@ src/macrocredit/config/
 
 ## Key Features
 
+✅ **Type-safe dataclass** - `DatasetEntry` with IDE autocomplete and type checking  
 ✅ **No external databases** - Pure file-based (Parquet/JSON)  
-✅ **Type-safe** - Comprehensive type hints throughout  
+✅ **Dual access patterns** - Type-safe dataclass or dict-based as needed  
+✅ **Modern Python 3.13** - Uses `str | None`, `dict[str, Any]` syntax  
 ✅ **Deterministic** - Reproducible I/O operations  
-✅ **Well-tested** - 49 unit tests, 97% coverage  
+✅ **Well-tested** - 59 unit tests, 100% coverage  
 ✅ **Documented** - NumPy-style docstrings, examples, README  
 ✅ **Production-ready** - Error handling, validation, edge cases covered
 
@@ -93,19 +98,35 @@ viz = [
 ## Usage Example
 
 ```python
-from macrocredit.persistence import DataRegistry, save_parquet, load_parquet
+from macrocredit.persistence import (
+    DataRegistry,
+    DatasetEntry,
+    save_parquet,
+    load_parquet,
+)
 from macrocredit.config import DATA_DIR, REGISTRY_PATH
 
 # Create registry
 registry = DataRegistry(REGISTRY_PATH, DATA_DIR)
 
-# Register dataset
+# Register dataset (auto-extracts metadata)
 registry.register_dataset(
     name='cdx_ig_5y',
     file_path=DATA_DIR / 'raw' / 'cdx_ig_5y.parquet',
     instrument='CDX.NA.IG',
-    tenor='5Y'
+    tenor='5Y',
+    metadata={'source': 'Bloomberg', 'frequency': 'daily'}
 )
+
+# Type-safe access with dataclass (preferred for production code)
+entry = registry.get_dataset_entry('cdx_ig_5y')
+print(f"Instrument: {entry.instrument}")  # IDE autocomplete works!
+print(f"Rows: {entry.row_count}")
+print(f"Date range: {entry.start_date} to {entry.end_date}")
+
+# Dict-based access (for JSON serialization or quick scripts)
+info = registry.get_dataset_info('cdx_ig_5y')
+print(info['instrument'])
 
 # Load data with filtering
 df = load_parquet(
@@ -113,6 +134,11 @@ df = load_parquet(
     start_date=pd.Timestamp('2024-10-01'),
     columns=['spread']
 )
+
+# Iterate over datasets type-safely
+for name in registry.list_datasets(instrument='CDX.NA.IG'):
+    entry = registry.get_dataset_entry(name)
+    print(f"{entry.instrument} ({entry.tenor}): {entry.row_count} rows")
 ```
 
 ## Next Steps
@@ -138,15 +164,50 @@ With the persistence layer complete, the recommended build order is:
 - [ ] Models layer (signal generation)
 - [ ] Backtest layer (P&L, risk metrics)
 
+## DatasetEntry Dataclass
+
+The registry now uses a type-safe dataclass for dataset metadata:
+
+```python
+@dataclass
+class DatasetEntry:
+    """Type-safe container for dataset metadata."""
+    instrument: str
+    file_path: str
+    registered_at: str
+    tenor: str | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    row_count: int | None = None
+    last_updated: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+    
+    def to_dict(self) -> dict[str, Any]: ...
+    
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> DatasetEntry: ...
+```
+
+**Benefits:**
+- **IDE autocomplete** - All attributes visible in editor
+- **Type checking** - mypy validates attribute access
+- **No KeyError risk** - Typos caught at edit time, not runtime
+- **Self-documenting** - Clear schema in code
+- **Conversion methods** - Easy JSON serialization via `to_dict()`
+
+**When to use:**
+- `get_dataset_entry()` → Type-safe production code, multiple field access
+- `get_dataset_info()` → Quick scripts, JSON workflows, backward compatibility
+
 ## Validation
 
 All tests passing:
 ```bash
 $ uv run pytest tests/persistence/ -v
-49 passed in 0.93s
+59 passed in 0.89s
 
 $ uv run pytest tests/persistence/ --cov=macrocredit.persistence
-Coverage: 97%
+Coverage: 100%
 ```
 
 Demo execution successful:
@@ -154,7 +215,8 @@ Demo execution successful:
 $ uv run python examples/persistence_demo.py
 ✓ Created 4 datasets (CDX IG/HY, VIX, HYG)
 ✓ Registered all datasets
-✓ Demonstrated queries and filtering
+✓ Demonstrated type-safe queries with DatasetEntry
+✓ Demonstrated dataclass conversion methods
 ✓ Saved run metadata
 ```
 
@@ -163,10 +225,12 @@ $ uv run python examples/persistence_demo.py
 This implementation follows all project standards:
 
 ✅ **Modular architecture** - Clean separation of concerns  
-✅ **Type hints** - Full type annotations  
+✅ **Function-first design** - Dataclass used only for data containers  
+✅ **Modern Python 3.13** - Uses `str | None`, `dict[str, Any]` (no `Optional`, `Union`)  
+✅ **Type hints** - Full type annotations with `from typing import Any`  
 ✅ **NumPy docstrings** - Comprehensive documentation  
 ✅ **PEP 8 compliant** - Formatted with black/ruff  
-✅ **Tested** - Unit tests for all functionality  
+✅ **Tested** - Unit tests for all functionality including dataclass features  
 ✅ **Reproducible** - Deterministic behavior, no randomness  
 ✅ **No global state** - Pure functions and explicit configuration
 

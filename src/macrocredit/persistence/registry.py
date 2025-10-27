@@ -8,12 +8,61 @@ validation status, and update timestamps.
 import logging
 from pathlib import Path
 from datetime import datetime
+from dataclasses import dataclass, field, asdict
+from typing import Any
 import pandas as pd
 
 from .json_io import save_json, load_json
 from .parquet_io import load_parquet
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class DatasetEntry:
+    """
+    Metadata for a registered dataset.
+
+    Attributes
+    ----------
+    instrument : str
+        Instrument identifier (e.g., 'CDX.NA.IG', 'VIX', 'HYG').
+    file_path : str
+        Path to the Parquet file.
+    registered_at : str
+        ISO format timestamp of registration.
+    tenor : str or None
+        Tenor specification (e.g., '5Y', '10Y'), None if not applicable.
+    start_date : str or None
+        ISO format start date of data coverage.
+    end_date : str or None
+        ISO format end date of data coverage.
+    row_count : int or None
+        Number of rows in the dataset.
+    last_updated : str or None
+        ISO format timestamp of last statistics update.
+    metadata : dict[str, Any]
+        Additional user-defined metadata.
+    """
+
+    instrument: str
+    file_path: str
+    registered_at: str
+    tenor: str | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    row_count: int | None = None
+    last_updated: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert entry to dictionary for JSON serialization."""
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "DatasetEntry":
+        """Create entry from dictionary loaded from JSON."""
+        return cls(**data)
 
 
 class DataRegistry:
@@ -74,7 +123,7 @@ class DataRegistry:
         file_path: str | Path,
         instrument: str,
         tenor: str | None = None,
-        metadata: dict | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """
         Register a dataset in the catalog with metadata.
@@ -121,19 +170,19 @@ class DataRegistry:
             logger.debug("Registering non-existent file: %s", file_path)
             start_date = end_date = row_count = None
 
-        # Build registry entry
-        entry = {
-            "instrument": instrument,
-            "tenor": tenor,
-            "file_path": str(file_path),
-            "registered_at": datetime.now().isoformat(),
-            "start_date": start_date.isoformat() if start_date else None,
-            "end_date": end_date.isoformat() if end_date else None,
-            "row_count": row_count,
-            "metadata": metadata or {},
-        }
+        # Build registry entry using dataclass
+        entry = DatasetEntry(
+            instrument=instrument,
+            tenor=tenor,
+            file_path=str(file_path),
+            registered_at=datetime.now().isoformat(),
+            start_date=start_date.isoformat() if start_date else None,
+            end_date=end_date.isoformat() if end_date else None,
+            row_count=row_count,
+            metadata=metadata or {},
+        )
 
-        self._catalog[name] = entry
+        self._catalog[name] = entry.to_dict()
         self._save()
 
         logger.info(
@@ -144,7 +193,7 @@ class DataRegistry:
             row_count,
         )
 
-    def get_dataset_info(self, name: str) -> dict:
+    def get_dataset_info(self, name: str) -> dict[str, Any]:
         """
         Retrieve metadata for a registered dataset.
 
@@ -155,17 +204,53 @@ class DataRegistry:
 
         Returns
         -------
-        dict
+        dict[str, Any]
             Dataset metadata including file path, date range, etc.
 
         Raises
         ------
         KeyError
             If dataset name not found in registry.
+
+        Notes
+        -----
+        Returns a copy to prevent external modification of catalog.
+        For type-safe access, use `get_dataset_entry()` instead.
         """
         if name not in self._catalog:
             raise KeyError(f"Dataset '{name}' not found in registry")
         return self._catalog[name].copy()
+
+    def get_dataset_entry(self, name: str) -> DatasetEntry:
+        """
+        Retrieve metadata as a typed DatasetEntry object.
+
+        Parameters
+        ----------
+        name : str
+            Dataset identifier.
+
+        Returns
+        -------
+        DatasetEntry
+            Typed dataset metadata with attribute access.
+
+        Raises
+        ------
+        KeyError
+            If dataset name not found in registry.
+
+        Examples
+        --------
+        >>> entry = registry.get_dataset_entry('cdx_ig_5y')
+        >>> print(entry.instrument)  # IDE autocomplete works
+        'CDX.NA.IG'
+        >>> print(entry.row_count)
+        215
+        """
+        if name not in self._catalog:
+            raise KeyError(f"Dataset '{name}' not found in registry")
+        return DatasetEntry.from_dict(self._catalog[name])
 
     def list_datasets(
         self,

@@ -1,7 +1,6 @@
 ---
 mode: agent
 model: Claude Sonnet 4.5
-tools: ['search/codebase']
 description: 'Review the ${workspaceFolder} implementation layer'
 ---
 # Layer Implementation Review
@@ -106,7 +105,12 @@ Prioritized list:
 
 ---
 
-## Usage
+## Review Workflow
+
+**After identifying issues, the agent should:**
+1. **Implement fixes directly** using edit/files tool
+2. **Run tests** to verify changes don't break functionality
+3. **Provide a summary** of changes made with git commit message
 
 **Invoke with:**
 ```
@@ -120,11 +124,12 @@ Focus on: [interface design / layer boundaries / simplicity / etc.]
 **Agent will:**
 1. Apply checklist systematically
 2. Identify critical vs. nice-to-have issues
-3. Provide actionable recommendations with priority
-4. Suggest concrete refactorings with code examples
+3. **Implement fixes directly** (not just recommend)
+4. Run tests to verify correctness
+5. Provide git commit message for changes
 
 ---
 
-> **Version:** 1.0
+> **Version:** 1.1
 > **Optimized for:** Claude Sonnet 4.5 / GPT-5 Agent Mode  
 > **Last Updated:** October 27, 2025

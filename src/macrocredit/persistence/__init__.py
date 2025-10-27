@@ -7,7 +7,7 @@ system to track available datasets.
 
 from .parquet_io import save_parquet, load_parquet, list_parquet_files
 from .json_io import save_json, load_json
-from .registry import DataRegistry
+from .registry import DataRegistry, DatasetEntry
 
 __all__ = [
     "save_parquet",
@@ -16,4 +16,5 @@ __all__ = [
     "save_json",
     "load_json",
     "DataRegistry",
+    "DatasetEntry",
 ]
