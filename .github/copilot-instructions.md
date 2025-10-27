@@ -59,7 +59,13 @@ Use relative imports and avoid global state.
 
 ---
 
-## 💡 Agent Behavior Guidelines
+## Environment Standards
+
+- **Python:** 3.13
+
+---
+
+## Agent Behavior Guidelines
 
 ### General
 1. **Always prioritize modular, PEP 8‑compliant, type‑annotated code.**
@@ -109,9 +115,32 @@ def compute_spread_momentum(spread: pd.Series, window: int = 5) -> pd.Series:
     """
 ```
 
+### Documentation Structure
+
+**Single Source of Truth Principle**: Each piece of information has exactly one authoritative location.
+
+| Doc Type | Location | Purpose |
+|----------|----------|---------|
+| **API Reference** | Module docstrings | Function/class contracts, type info, parameters |
+| **Quickstart** | `README.md` | Installation, quick examples, navigation |
+| **Design Docs** | `docs/*.md` | Architecture, standards, strategy rationale |
+| **Examples** | `examples/*.py` headers | Runnable demonstrations with explanatory headers |
+
+**What to document where:**
+- **Docstrings**: API contracts (parameters, returns, raises), edge cases, usage notes
+- **Examples**: Workflow demonstrations with clear headers explaining purpose and expected output
+- **Design docs**: Architectural decisions, cross-cutting concerns (*why*, not *how*)
+- **README**: Installation, project structure, quickstart commands
+
+**Never:**
+- Create README files in implementation directories (`src/macrocredit/*/README.md`)
+- Duplicate API documentation outside of docstrings
+- Write tutorial-style docs that duplicate runnable examples
+- Document usage patterns in design docs (use examples instead)
+
 ---
 
-## 🧠 Agent Context Hints for Claude Sonnet / GPT‑5
+## Agent Context Hints for Claude Sonnet / GPT-5
 
 | Context | Preferred Behavior |
 |----------|--------------------|
@@ -161,7 +190,7 @@ signal = -spread_change / volatility  # Negated to match convention
 
 ---
 
-## ✅ Completion Optimization Rules
+## Completion Optimization Rules
 
 - Always suggest **imports relative to project structure**, not absolute paths.  
 - Provide **runnable examples** with synthetic or minimal data.  
@@ -228,7 +257,7 @@ def compute_vix_cdx_gap(
 
 ---
 
-## 🚫 The Agent Should Never
+## The Agent Should Never
 
 - Use external databases or APIs (use Parquet/JSON only).  
 - Use old typing syntax (`Optional`, `Union`, `List`, `Dict`).
@@ -241,10 +270,13 @@ def compute_vix_cdx_gap(
 - Add decorative emojis to code, comments, or docstrings.
 - Create classes when a simple function would suffice.
 - Use regular classes for data containers instead of `@dataclass`.
+- Create README files in implementation directories (`src/macrocredit/*/README.md`).
+- Duplicate API documentation outside of module docstrings.
+- Write tutorial-style docs that duplicate runnable examples.
 
 ---
 
-## 🧪 Testing & Logging Expectations
+## Testing & Logging Expectations
 
 - All stochastic components must be **seeded deterministically**.  
 - Every backtest or signal computation must log metadata (timestamp, parameters, version).
@@ -278,7 +310,7 @@ def run_backtest(params: dict) -> dict:
 
 ---
 
-## � Git Commit Standards
+## Git Commit Standards
 
 Follow **Conventional Commits** format for consistency and automated changelog generation:
 
@@ -350,7 +382,7 @@ refactor: Modernize type hints to Python 3.13 syntax
 
 ---
 
-## �🔗 Recommended Agent Prompts
+## Recommended Agent Prompts
 
 When using Copilot Chat or VS Code inline completions, prefer prompts like:
 
@@ -363,7 +395,7 @@ Avoid generic prompts like *"optimize this code"* — always specify layer and i
 
 ---
 
-## 📘 Summary
+## Summary
 
 Copilot should behave like a **quantitative developer assistant**, not a strategy designer.  
 It should:
