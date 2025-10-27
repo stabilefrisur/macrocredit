@@ -12,6 +12,30 @@ This implementation is **intentionally minimal** to maintain:
 
 The design accommodates future integration with more powerful frameworks like `vectorbt`, `backtrader`, or `quantstats` without requiring a complete rewrite.
 
+### Extensibility via Protocols
+
+The backtest layer defines `Protocol` interfaces for swappable components:
+
+```python
+from macrocredit.backtest import BacktestEngine, PerformanceCalculator
+
+# Our simple implementation follows these protocols
+result = run_backtest(signal, spread, config)  # BacktestEngine protocol
+metrics = compute_performance_metrics(result.pnl, result.positions)  # PerformanceCalculator protocol
+
+# Future: Swap in professional libraries while maintaining the same API
+# from macrocredit.backtest.adapters import VectorBTEngine, QuantStatsCalculator
+# engine = VectorBTEngine()
+# result = engine.run(signal, spread, config)
+# calc = QuantStatsCalculator()
+# metrics = calc.compute(result.pnl, result.positions)
+```
+
+This allows:
+1. **Testing against multiple backends**: Compare results from simple vs. sophisticated engines
+2. **Gradual migration**: Start simple, swap in optimized implementations later
+3. **Library independence**: Not locked into any specific backtest framework
+
 ## Core Components
 
 ### `BacktestConfig`

@@ -137,6 +137,10 @@ def run_backtest(
         entry_cost = 0.0
         exit_cost = 0.0
 
+        # Store position before any state changes (for P&L calculation)
+        position_before_update = current_position
+        entry_spread_before_update = entry_spread
+
         # Determine position based on signal thresholds
         if current_position == 0:
             # Not in position - check entry conditions
@@ -160,20 +164,21 @@ def run_backtest(
             )
 
             if exit_signal or exit_time:
-                # Exit position
+                # Exit position (will apply exit cost and capture final P&L)
                 exit_cost = config.transaction_cost_bps * config.position_size * 100
                 current_position = 0
                 days_held = 0
 
-        # Calculate P&L for current position
-        if current_position != 0:
+        # Calculate P&L based on position we held during this period
+        # Use position_before_update to capture P&L on exit day
+        if position_before_update != 0:
             # Spread change: negative when tightening, positive when widening
-            spread_change = spread_level - entry_spread
+            spread_change = spread_level - entry_spread_before_update
             # Long position profits from tightening (negative spread change)
             # Short position profits from widening (positive spread change)
             # P&L = -position * spread_change * DV01 * position_size
             spread_pnl = (
-                -current_position
+                -position_before_update
                 * spread_change
                 * config.dv01_per_million
                 * config.position_size

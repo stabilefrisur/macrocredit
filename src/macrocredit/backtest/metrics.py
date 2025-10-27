@@ -149,42 +149,32 @@ def compute_performance_metrics(
         calmar_ratio = 0.0
 
     # Trade-level statistics
-    # Identify trade boundaries: position changes (entries, exits, reversals)
+    # Identify trade entries (transitions from flat to positioned)
     prev_position = positions_df["position"].shift(1).fillna(0)
-    position_change = positions_df["position"] != prev_position
-    
-    # Count entries only for n_trades (consistent with engine)
     position_entries = (prev_position == 0) & (positions_df["position"] != 0)
     n_trades = position_entries.sum()
 
-    # Identify trade P&L: accumulate P&L between position changes
-    trade_pnls = []
-    current_trade_pnl = 0.0
-
-    for idx, row in pnl_df.iterrows():
-        current_pos = positions_df.loc[idx, "position"]
-        is_change = position_change.loc[idx]
-
-        # If position changed and we were accumulating, finalize the trade
-        if is_change and current_trade_pnl != 0.0:
-            trade_pnls.append(current_trade_pnl)
-            current_trade_pnl = 0.0
-
-        # Accumulate P&L if in a position
-        if current_pos != 0:
-            current_trade_pnl += row["net_pnl"]
-
-    # Handle case where last position is still open
-    if current_trade_pnl != 0.0:
-        trade_pnls.append(current_trade_pnl)
-
-    # Win/loss statistics
-    if len(trade_pnls) > 0:
-        trade_pnls_array = np.array(trade_pnls)
+    # Compute P&L per trade by grouping consecutive positions
+    # Assign a trade_id to each position period
+    position_changes = (positions_df["position"] != prev_position).astype(int)
+    trade_id = position_changes.cumsum()
+    
+    # Only include periods where we have a position
+    active_trades = positions_df[positions_df["position"] != 0].copy()
+    
+    if len(active_trades) > 0:
+        active_trades["trade_id"] = trade_id[positions_df["position"] != 0]
+        
+        # Sum P&L per trade_id
+        trade_pnls = pnl_df.loc[active_trades.index].groupby(
+            active_trades["trade_id"]
+        )["net_pnl"].sum()
+        
+        trade_pnls_array = trade_pnls.values
         winning_trades = trade_pnls_array[trade_pnls_array > 0]
         losing_trades = trade_pnls_array[trade_pnls_array < 0]
 
-        hit_rate = len(winning_trades) / len(trade_pnls_array)
+        hit_rate = len(winning_trades) / len(trade_pnls_array) if len(trade_pnls_array) > 0 else 0.0
         avg_win = winning_trades.mean() if len(winning_trades) > 0 else 0.0
         avg_loss = losing_trades.mean() if len(losing_trades) > 0 else 0.0
 

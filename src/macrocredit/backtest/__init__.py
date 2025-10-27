@@ -10,11 +10,13 @@ Core Components
 - engine: Position generation and P&L simulation
 - metrics: Performance and risk statistics
 - config: Backtest parameters and constraints
+- protocols: Abstract interfaces for extensibility
 """
 
 from .config import BacktestConfig
 from .engine import run_backtest, BacktestResult
 from .metrics import compute_performance_metrics, PerformanceMetrics
+from .protocols import BacktestEngine, PerformanceCalculator
 
 __all__ = [
     "BacktestConfig",
@@ -22,4 +24,6 @@ __all__ = [
     "BacktestResult",
     "compute_performance_metrics",
     "PerformanceMetrics",
+    "BacktestEngine",
+    "PerformanceCalculator",
 ]

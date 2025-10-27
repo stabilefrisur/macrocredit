@@ -37,8 +37,18 @@ backtest/
   config.py          # BacktestConfig dataclass
   engine.py          # run_backtest() and BacktestResult
   metrics.py         # compute_performance_metrics() and PerformanceMetrics
+  protocols.py       # BacktestEngine and PerformanceCalculator protocols
+  adapters.py        # Example adapters for third-party libraries (stubs)
   __init__.py        # Public API exports
 ```
+
+**Extensibility via Protocols:**
+
+The backtest layer defines `Protocol` interfaces for swappable components:
+- `BacktestEngine`: Interface for backtest implementations (allows swapping simple → vectorbt)
+- `PerformanceCalculator`: Interface for metrics computation (allows swapping simple → quantstats)
+
+This enables testing against multiple backends and gradual migration to professional libraries while maintaining the same domain-specific API.
 
 ### Data Flow
 
@@ -113,6 +123,11 @@ def run_backtest(
 - Transaction costs: Applied on entry and exit
   - `Cost = transaction_cost_bps × position_size × 100`
 - Net P&L: `Spread P&L - Costs`
+
+**Implementation Details:**
+- P&L calculated using `position_before_update` to correctly capture exit day profits
+- Ensures final day's P&L is included when closing positions
+- Trade P&L aggregation uses pandas groupby for clarity and performance
 
 **Output:**
 - `positions` DataFrame: signal, position, days_held, spread
@@ -368,19 +383,38 @@ class DynamicBacktestConfig(BacktestConfig):
     sizing_mode: str = "signal_strength"
 ```
 
-### Integration with vectorbt
+### Integration with Professional Libraries
+
+The backtest layer provides `Protocol` interfaces for seamless integration:
 
 ```python
-import vectorbt as vbt
+# Example: Using protocols to swap backends
+from macrocredit.backtest import BacktestEngine, PerformanceCalculator
 
-def convert_to_vectorbt(result: BacktestResult) -> vbt.Portfolio:
-    return vbt.Portfolio.from_orders(
-        close=result.positions["spread"],
-        entries=result.positions["position"] == 1,
-        exits=result.positions["position"] == 0,
-        freq="D",
-    )
+# Define custom adapter implementing BacktestEngine protocol
+class VectorBTEngine:
+    """Adapter wrapping vectorbt to match our API."""
+    
+    def run(
+        self,
+        composite_signal: pd.Series,
+        spread: pd.Series,
+        config: BacktestConfig | None = None,
+    ) -> BacktestResult:
+        # Convert to vectorbt format, run, convert back
+        ...
+
+# Use it transparently
+engine = VectorBTEngine()
+result = engine.run(signal, spread, config)  # Same API, different backend
+
+# See backtest/adapters.py for stub implementations
 ```
+
+**Benefits:**
+1. **Testing**: Compare results from simple vs. sophisticated engines
+2. **Migration**: Start simple, swap in optimized implementations later
+3. **Independence**: Not locked into any specific framework
 
 ---
 
@@ -391,9 +425,26 @@ from macrocredit.backtest import (
     BacktestConfig,          # Configuration
     run_backtest,            # Core engine
     BacktestResult,          # Output container
-    compute_performance_metrics,  # Metrics
+    compute_performance_metrics,  # Metrics computation
     PerformanceMetrics,      # Metrics container
+    BacktestEngine,          # Protocol for backtest implementations
+    PerformanceCalculator,   # Protocol for metrics computation
 )
+```
+
+### Protocols for Extensibility
+
+```python
+from macrocredit.backtest import BacktestEngine, PerformanceCalculator
+
+# Our implementation follows these protocols
+result = run_backtest(signal, spread, config)  # Implements BacktestEngine
+metrics = compute_performance_metrics(result.pnl, result.positions)  # Implements PerformanceCalculator
+
+# Future: Swap in professional libraries (stubs in adapters.py)
+# from macrocredit.backtest.adapters import VectorBTEngine
+# engine = VectorBTEngine()
+# result = engine.run(signal, spread, config)
 ```
 
 ---
@@ -407,4 +458,4 @@ from macrocredit.backtest import (
 ---
 
 **Maintainer:** stabilefrisur  
-**Last Updated:** October 26, 2025
+**Last Updated:** October 27, 2025
