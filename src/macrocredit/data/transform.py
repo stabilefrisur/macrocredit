@@ -7,6 +7,7 @@ All functions preserve DatetimeIndex and handle missing data appropriately.
 
 import logging
 
+import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -94,7 +95,7 @@ def compute_returns(
     )
 
     if log_returns:
-        returns = (prices / prices.shift(window)).apply("log")
+        returns = (prices / prices.shift(window)).apply(np.log)
     else:
         returns = prices.pct_change(window)
 

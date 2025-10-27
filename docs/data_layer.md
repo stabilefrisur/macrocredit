@@ -18,6 +18,8 @@ Successfully implemented a comprehensive **data layer** for the Systematic Macro
    - `validate_cdx_schema()`: Validates CDX data
    - `validate_vix_schema()`: Validates VIX data
    - `validate_etf_schema()`: Validates ETF data
+   - `_ensure_datetime_index()`: Helper for DatetimeIndex conversion
+   - `_check_duplicate_dates()`: Helper for duplicate detection and logging
    - Enforces business logic constraints (spread/price bounds)
    - Handles pre-indexed DataFrames gracefully
 
@@ -30,7 +32,7 @@ Successfully implemented a comprehensive **data layer** for the Systematic Macro
 
 4. **`transform.py`** - Data transformations
    - `compute_spread_changes()`: Spread diff/pct changes
-   - `compute_returns()`: Simple/log returns
+   - `compute_returns()`: Simple/log returns (uses `np.log` for type safety)
    - `align_multiple_series()`: Time series alignment
    - `resample_to_daily()`: Frequency resampling
    - `compute_rolling_zscore()`: Signal normalization
@@ -88,6 +90,7 @@ Created **34 comprehensive tests** (all passing):
 - PEP 8 compliant (ruff, black)
 - Integration with persistence layer
 - Error handling with context
+- DRY principle with helper functions (`_ensure_datetime_index`, `_check_duplicate_dates`)
 
 ### Data Quality
 - Spread bounds: 0-10,000 bp
@@ -177,14 +180,29 @@ data/
 
 ## Code Quality Metrics
 
-- **Lines of code**: ~1,200 (excluding tests)
+- **Lines of code**: ~1,150 (excluding tests, reduced via helper functions)
 - **Test coverage**: 100% of public API
 - **Documentation**: All functions documented
 - **Type coverage**: Full type hints
 - **Lint compliance**: Clean ruff/black output
+- **Code duplication**: Eliminated via `_ensure_datetime_index` and `_check_duplicate_dates` helpers
+
+## Recent Refactoring (October 27, 2025)
+
+### Improvements Applied
+1. **Type safety in `transform.py`**: Changed `.apply("log")` to `.apply(np.log)` for better type inference
+2. **Eliminated code duplication in `validation.py`**:
+   - Extracted `_ensure_datetime_index()` helper (~18 lines saved)
+   - Extracted `_check_duplicate_dates()` helper (~15 lines saved)
+   - Total reduction: ~30 lines of duplicate code eliminated
+
+### Test Results
+- All 34 tests passing
+- Ruff linting: Clean
+- Mypy: Type-safe (pandas-stubs pending installation)
 
 ---
 
-**Status**: ✅ Data layer implementation complete and tested
+**Status**: ✅ Data layer implementation complete, refactored, and tested
 **Date**: October 26, 2025
 **Next**: Models layer for signal generation

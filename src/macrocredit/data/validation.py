@@ -13,6 +13,49 @@ from .schemas import CDXSchema, VIXSchema, ETFSchema
 logger = logging.getLogger(__name__)
 
 
+def _ensure_datetime_index(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
+    """
+    Convert DataFrame to use DatetimeIndex if not already.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame to process.
+    date_col : str
+        Name of date column to use as index.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with DatetimeIndex, sorted by date.
+    """
+    if not isinstance(df.index, pd.DatetimeIndex):
+        df = df.copy()
+        df[date_col] = pd.to_datetime(df[date_col])
+        df = df.set_index(date_col)
+    
+    return df.sort_index()
+
+
+def _check_duplicate_dates(df: pd.DataFrame, context: str = "") -> None:
+    """
+    Check for and log duplicate dates in DataFrame index.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame with DatetimeIndex to check.
+    context : str, optional
+        Additional context for log message (e.g., ticker name).
+    """
+    if df.index.duplicated().any():
+        n_dups = df.index.duplicated().sum()
+        if context:
+            logger.warning("Found %d duplicate dates for %s", n_dups, context)
+        else:
+            logger.warning("Found %d duplicate dates", n_dups)
+
+
 def validate_cdx_schema(df: pd.DataFrame, schema: CDXSchema = CDXSchema()) -> pd.DataFrame:
     """
     Validate CDX index data against expected schema.
@@ -65,19 +108,11 @@ def validate_cdx_schema(df: pd.DataFrame, schema: CDXSchema = CDXSchema()) -> pd
         )
         raise ValueError(f"Spread values outside valid range: {invalid.head()}")
 
-    # Convert date to index
-    if not isinstance(df.index, pd.DatetimeIndex):
-        df = df.copy()
-        df[schema.date_col] = pd.to_datetime(df[schema.date_col])
-        df = df.set_index(schema.date_col)
+    # Convert to DatetimeIndex and sort
+    df = _ensure_datetime_index(df, schema.date_col)
 
     # Check for duplicates
-    if df.index.duplicated().any():
-        n_dups = df.index.duplicated().sum()
-        logger.warning("Found %d duplicate dates", n_dups)
-
-    # Sort by date
-    df = df.sort_index()
+    _check_duplicate_dates(df)
 
     logger.debug("CDX validation passed: date_range=%s to %s", df.index.min(), df.index.max())
     return df
@@ -127,20 +162,13 @@ def validate_vix_schema(df: pd.DataFrame, schema: VIXSchema = VIXSchema()) -> pd
         )
         raise ValueError(f"VIX values outside valid range: {invalid.head()}")
 
-    # Convert date to index
-    if not isinstance(df.index, pd.DatetimeIndex):
-        df = df.copy()
-        df[schema.date_col] = pd.to_datetime(df[schema.date_col])
-        df = df.set_index(schema.date_col)
+    # Convert to DatetimeIndex and sort
+    df = _ensure_datetime_index(df, schema.date_col)
 
-    # Check for duplicates
+    # Check for duplicates (remove duplicates for VIX)
     if df.index.duplicated().any():
-        n_dups = df.index.duplicated().sum()
-        logger.warning("Found %d duplicate dates", n_dups)
+        _check_duplicate_dates(df)
         df = df[~df.index.duplicated(keep="first")]
-
-    # Sort by date
-    df = df.sort_index()
 
     logger.debug("VIX validation passed: date_range=%s to %s", df.index.min(), df.index.max())
     return df
@@ -190,22 +218,14 @@ def validate_etf_schema(df: pd.DataFrame, schema: ETFSchema = ETFSchema()) -> pd
         )
         raise ValueError(f"Price values outside valid range: {invalid.head()}")
 
-    # Convert date to index
-    if not isinstance(df.index, pd.DatetimeIndex):
-        df = df.copy()
-        df[schema.date_col] = pd.to_datetime(df[schema.date_col])
-        df = df.set_index(schema.date_col)
+    # Convert to DatetimeIndex and sort
+    df = _ensure_datetime_index(df, schema.date_col)
 
     # Check for duplicates per ticker
     if schema.ticker_col in df.columns:
         for ticker in df[schema.ticker_col].unique():
             ticker_df = df[df[schema.ticker_col] == ticker]
-            if ticker_df.index.duplicated().any():
-                n_dups = ticker_df.index.duplicated().sum()
-                logger.warning("Found %d duplicate dates for ticker %s", n_dups, ticker)
-
-    # Sort by date
-    df = df.sort_index()
+            _check_duplicate_dates(ticker_df, context=f"ticker {ticker}")
 
     logger.debug("ETF validation passed: date_range=%s to %s", df.index.min(), df.index.max())
     return df
