@@ -149,29 +149,33 @@ def compute_performance_metrics(
         calmar_ratio = 0.0
 
     # Trade-level statistics
-    position_changes = positions_df["position"].diff().fillna(0)
-    trade_entries = (position_changes != 0) & (positions_df["position"] != 0)
-    n_trades = trade_entries.sum()
+    # Identify trade boundaries: position changes (entries, exits, reversals)
+    prev_position = positions_df["position"].shift(1).fillna(0)
+    position_change = positions_df["position"] != prev_position
+    
+    # Count entries only for n_trades (consistent with engine)
+    position_entries = (prev_position == 0) & (positions_df["position"] != 0)
+    n_trades = position_entries.sum()
 
-    # Identify trade P&L (sum P&L during each position)
+    # Identify trade P&L: accumulate P&L between position changes
     trade_pnls = []
     current_trade_pnl = 0.0
-    in_position = False
 
     for idx, row in pnl_df.iterrows():
-        position = positions_df.loc[idx, "position"]
+        current_pos = positions_df.loc[idx, "position"]
+        is_change = position_change.loc[idx]
 
-        if position != 0:
-            current_trade_pnl += row["net_pnl"]
-            in_position = True
-        elif in_position:
-            # Just exited
+        # If position changed and we were accumulating, finalize the trade
+        if is_change and current_trade_pnl != 0.0:
             trade_pnls.append(current_trade_pnl)
             current_trade_pnl = 0.0
-            in_position = False
+
+        # Accumulate P&L if in a position
+        if current_pos != 0:
+            current_trade_pnl += row["net_pnl"]
 
     # Handle case where last position is still open
-    if in_position:
+    if current_trade_pnl != 0.0:
         trade_pnls.append(current_trade_pnl)
 
     # Win/loss statistics

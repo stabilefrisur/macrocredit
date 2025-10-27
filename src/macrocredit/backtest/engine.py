@@ -9,6 +9,7 @@ libraries while maintaining our domain-specific logic.
 import logging
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 import pandas as pd
 
@@ -47,7 +48,7 @@ class BacktestResult:
 
     positions: pd.DataFrame
     pnl: pd.DataFrame
-    metadata: dict
+    metadata: dict[str, Any]
 
 
 def run_backtest(
@@ -103,6 +104,12 @@ def run_backtest(
         config.entry_threshold,
         config.position_size,
     )
+
+    # Validate inputs
+    if not isinstance(composite_signal.index, pd.DatetimeIndex):
+        raise ValueError("composite_signal must have DatetimeIndex")
+    if not isinstance(spread.index, pd.DatetimeIndex):
+        raise ValueError("spread must have DatetimeIndex")
 
     # Align data
     aligned = pd.DataFrame(
@@ -203,8 +210,10 @@ def run_backtest(
     pnl_df = pd.DataFrame(pnl_records).set_index("date")
     pnl_df["cumulative_pnl"] = pnl_df["net_pnl"].cumsum()
 
-    # Calculate summary statistics
-    n_trades = (positions_df["position"].diff().fillna(0) != 0).sum()
+    # Calculate summary statistics (count round-trip trades: entries only)
+    prev_position = positions_df["position"].shift(1).fillna(0)
+    position_entries = (prev_position == 0) & (positions_df["position"] != 0)
+    n_trades = position_entries.sum()
     total_pnl = pnl_df["cumulative_pnl"].iloc[-1]
     avg_pnl_per_trade = total_pnl / n_trades if n_trades > 0 else 0.0
 

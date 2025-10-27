@@ -254,3 +254,21 @@ def test_backtest_with_max_holding_days(
     in_position = result.positions[result.positions["position"] != 0]
     if len(in_position) > 0:
         assert in_position["days_held"].max() <= config.max_holding_days
+
+
+def test_run_backtest_validates_index_types() -> None:
+    """Test that backtest validates input index types."""
+    # Create signal and spread with non-datetime indices
+    signal = pd.Series([1.0, 2.0, 3.0], index=[0, 1, 2])
+    spread = pd.Series([100.0, 101.0, 102.0], index=[0, 1, 2])
+
+    # Should raise ValueError for non-DatetimeIndex
+    with pytest.raises(ValueError, match="composite_signal must have DatetimeIndex"):
+        run_backtest(signal, spread)
+
+    # Test with valid signal but invalid spread
+    dates = pd.date_range("2024-01-01", periods=3, freq="D")
+    signal_valid = pd.Series([1.0, 2.0, 3.0], index=dates)
+    
+    with pytest.raises(ValueError, match="spread must have DatetimeIndex"):
+        run_backtest(signal_valid, spread)
