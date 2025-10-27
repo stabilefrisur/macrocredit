@@ -31,32 +31,48 @@ Typical holding period is **days to a few weeks**, with moderate turnover aligne
 
 ## 3. Core Signals
 
-### 3.1 ETF vs CDX Basis  
+### 3.1 CDX-ETF Basis (`cdx_etf_basis`)  
 **Rationale:** Pricing gaps between ETFs and CDX indices can indicate temporary mispricing caused by fund flows or liquidity constraints.  
 
-**Trading Logic:**  
-- **Long protection** when ETF spreads tighten relative to CDX (CDX cheap).  
-- **Short protection** when ETF spreads widen relative to CDX (CDX expensive).  
+**Signal Convention:**  
+- **Positive signal** = CDX cheap (wider spreads) → Long credit risk → Buy CDX (sell protection)
+- **Negative signal** = CDX expensive (tighter spreads) → Short credit risk → Sell CDX (buy protection)
+
+**Calculation:**  
+- Raw calculation: `CDX spread - ETF spread`
+- No sign adjustment needed (natural directionality)
+- Positive values indicate CDX is cheap relative to ETF
 
 **Normalization:**  
 - Adjust for **ETF flows and volatility**, scaling the basis signal to capture persistent dislocations rather than transient noise.
 
-### 3.2 VIX vs CDX Gap (Cross-Asset Risk Sentiment)  
+### 3.2 CDX-VIX Gap (`cdx_vix_gap`)  
 **Rationale:** Divergences between equity implied volatility (VIX) and credit spreads reflect asymmetric cross-asset stress conditions.  
 
-**Trading Logic:**  
-- **Buy protection** when VIX spikes disproportionately to CDX spreads (equity stress outpacing credit).  
-- **Sell protection** when CDX spreads spike relative to VIX (credit-specific stress).  
+**Signal Convention:**  
+- **Positive signal** = Credit stress exceeds equity stress → Long credit risk → Buy CDX (sell protection)
+- **Negative signal** = Equity stress exceeds credit stress → Short credit risk → Sell CDX (buy protection)
+
+**Calculation:**  
+- Raw calculation: `(CDX deviation from mean) - (VIX deviation from mean)`
+- No sign adjustment needed (natural directionality)
+- Positive values indicate credit-specific stress (CDX spreads spiking relative to VIX)
 
 **Considerations:**  
 - Differentiate **transient spikes** from sustained regime shifts using short-term averaging and persistence filters.
 
-### 3.3 Short-Term Spread Momentum  
+### 3.3 Spread Momentum (`spread_momentum`)  
 **Rationale:** CDX spreads exhibit measurable short-horizon momentum or mean-reversion.  
 
-**Trading Logic:**  
-- **Follow spread moves** when volatility-adjusted momentum signals continuation.  
-- **Fade spread moves** when momentum is weak or shows reversion tendencies.  
+**Signal Convention:**  
+- **Positive signal** = Favorable tightening momentum → Long credit risk → Buy CDX (sell protection)
+- **Negative signal** = Unfavorable widening momentum → Short credit risk → Sell CDX (buy protection)
+
+**Calculation:**  
+- Raw calculation: `current_spread - past_spread` (positive when widening)
+- **Sign adjustment required**: Negated during calculation because spread widening (positive change) should produce negative signal
+- Formula: `signal = -(spread_change / volatility)`
+- Positive values indicate spreads are tightening (bullish for credit)
 
 **Horizon:** Typically **3–10 days**, with signals normalized for recent volatility.
 
