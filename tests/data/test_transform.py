@@ -219,3 +219,4 @@ def test_align_single_series(caplog: pytest.LogCaptureFixture) -> None:
 
     assert len(aligned) == 1
     assert "less than 2 series" in caplog.text.lower()
+

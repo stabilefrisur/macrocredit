@@ -1,0 +1,15 @@
+{
+  "annualized_return": 416479.46552795236,
+  "annualized_volatility": 340441.8145584012,
+  "avg_holding_days": 0.5,
+  "avg_loss": 0.0,
+  "avg_win": 62792.69445838457,
+  "calmar_ratio": 416.47946552795236,
+  "hit_rate": 1.0,
+  "max_drawdown": -1000.0,
+  "n_trades": 1,
+  "sharpe_ratio": 1.2233499168372786,
+  "sortino_ratio": 0.0,
+  "total_return": 383425.53969240055,
+  "win_loss_ratio": 0.0
+}
