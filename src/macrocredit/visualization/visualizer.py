@@ -6,6 +6,7 @@ theming, caching, export utilities, and Streamlit integration.
 """
 
 import logging
+from typing import Any
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -199,14 +200,14 @@ class Visualizer:
 
     def dashboard(
         self,
-        backtest_results: dict,
+        backtest_results: dict[str, Any],
     ) -> go.Figure:
         """
         Generate comprehensive multi-panel dashboard (placeholder).
 
         Parameters
         ----------
-        backtest_results : dict
+        backtest_results : dict[str, Any]
             Dictionary with P&L, signals, positions, and metrics.
 
         Returns

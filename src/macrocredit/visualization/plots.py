@@ -6,6 +6,7 @@ All functions return Plotly figure objects for flexible rendering
 """
 
 import logging
+from typing import Any
 
 import pandas as pd
 import plotly.express as px
@@ -273,14 +274,14 @@ def plot_exposures(
 
 
 def plot_dashboard(
-    backtest_results: dict,
+    backtest_results: dict[str, Any],
 ) -> go.Figure:
     """
     Generate comprehensive multi-panel dashboard.
 
     Parameters
     ----------
-    backtest_results : dict
+    backtest_results : dict[str, Any]
         Dictionary containing P&L, signals, positions, and metrics.
 
     Returns
