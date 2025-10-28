@@ -16,6 +16,9 @@ cd macrocredit
 # Install dependencies
 uv sync
 
+# Install visualization dependencies (optional)
+uv sync --extra viz
+
 # Run examples
 uv run python examples/backtest_demo.py
 ```
@@ -48,6 +51,7 @@ macrocredit/
 │   ├── data/              # Data loading, validation, transformation
 │   ├── models/            # Signal generation and aggregation
 │   ├── backtest/          # Backtesting engine and metrics
+│   ├── visualization/     # Plotly charts and Streamlit dashboard
 │   ├── persistence/       # Parquet/JSON I/O and registry
 │   └── config/            # Configuration and constants
 ├── examples/              # Runnable demonstrations
@@ -62,6 +66,7 @@ macrocredit/
 | **Data** | Load, validate, transform market data | `macrocredit.data` |
 | **Models** | Generate signals and aggregate strategies | `macrocredit.models` |
 | **Backtest** | Simulate execution and compute metrics | `macrocredit.backtest` |
+| **Visualization** | Interactive charts and dashboards | `macrocredit.visualization` |
 | **Persistence** | Save/load data with metadata registry | `macrocredit.persistence` |
 
 ## Documentation
@@ -76,6 +81,7 @@ macrocredit/
 ✅ **Type-safe data loading** with schema validation  
 ✅ **Modular signal framework** with composable transformations  
 ✅ **Deterministic backtesting** with transaction cost modeling  
+✅ **Interactive visualization** with Plotly charts (equity, signals, drawdown)  
 ✅ **Parquet-based persistence** with JSON metadata registry  
 ✅ **Comprehensive logging** with run metadata tracking
 
@@ -115,6 +121,7 @@ Each example demonstrates a specific layer with synthetic data:
 uv run python examples/data_demo.py          # Data loading and transformation
 uv run python examples/models_demo.py        # Signal generation
 uv run python examples/backtest_demo.py      # Complete backtest workflow
+uv run python examples/visualization_demo.py # Interactive charts (requires viz extra)
 uv run python examples/persistence_demo.py   # Data I/O and registry
 ```
 

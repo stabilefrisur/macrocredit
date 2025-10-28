@@ -8,6 +8,7 @@ Runnable demonstrations of the macrocredit framework using synthetic market data
 # From project root
 uv run python examples/backtest_demo.py      # Complete strategy backtest (504 days)
 uv run python examples/models_demo.py        # Signal generation (252 days)
+uv run python examples/visualization_demo.py # Interactive charts (requires viz extra)
 uv run python examples/persistence_demo.py   # Data I/O and registry (209 days)
 uv run python examples/data_demo.py          # Data loading and transformation
 ```
@@ -18,6 +19,7 @@ uv run python examples/data_demo.py          # Data loading and transformation
 |--------|---------|--------------|
 | `backtest_demo.py` | End-to-end backtest workflow | Metrics, trade history, transaction costs |
 | `models_demo.py` | Signal generation and aggregation | Individual signals, composite scoring, positions |
+| `visualization_demo.py` | Interactive plotting and dashboards | Equity curves, signals, drawdown charts |
 | `persistence_demo.py` | Data I/O and registry management | Parquet files, metadata, registry queries |
 | `data_demo.py` | Data loading and transformation | Schema validation, alignment, z-scores |
 
