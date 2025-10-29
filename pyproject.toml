@@ -34,8 +34,7 @@ viz = [
     "streamlit>=1.39.0",
 ]
 bloomberg = [
-    "blpapi",
-    "xbbg>=0.8.0",
+    "xbbg>=0.7.0",
 ]
 
 [tool.pytest.ini_options]
