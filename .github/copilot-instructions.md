@@ -273,6 +273,8 @@ def compute_vix_cdx_gap(
 - Create README files in implementation directories (`src/macrocredit/*/README.md`).
 - Duplicate API documentation outside of module docstrings.
 - Write tutorial-style docs that duplicate runnable examples.
+- Implement authentication, authorization, or credential management (handled externally).
+- Create connection setup code for data providers (connections established outside project).
 
 ---
 
