@@ -1,44 +1,34 @@
 """
-Data Layer Demonstration - Loading, Validation, and Transformation
+Data Layer Demonstration - Loading, Validation, and Caching
 
-Demonstrates the complete data processing workflow:
+Demonstrates the data layer workflow for market data:
 1. Generate synthetic CDX, VIX, and ETF market data
-2. Save data to Parquet files
-3. Load data with schema validation:
-   - CDX index spreads
-   - VIX volatility levels
-   - ETF prices (converted to spread-equivalent)
-4. Transform data:
-   - Compute spread changes (diff and percentage)
-   - Compute price returns (simple and log)
-   - Align multiple time series (inner/outer join)
-   - Normalize signals with rolling z-scores
-5. Validate data quality and business logic constraints
+2. Save data to Parquet files in data/raw/
+3. Load data with automatic schema validation:
+   - CDX index spreads (validate_cdx_schema)
+   - VIX volatility levels (validate_vix_schema)
+   - ETF prices (validate_etf_schema)
+4. Demonstrate caching behavior (second fetch uses cache)
+5. Display summary statistics and data quality metrics
 
-Output: Loaded and transformed DataFrames with validation results
+Output: Validated DataFrames with DatetimeIndex and quality metrics
 
 Key Features:
   - Type-safe loading with DatetimeIndex enforcement
   - Schema validation (required columns, data types)
   - Business logic checks (spread/price bounds)
-  - Pure transformation functions with no side effects
+  - Transparent caching for repeated fetches
+  - Clean separation of data layer from models layer
 """
 
 import logging
-from pathlib import Path
 
 from macrocredit.data.sample_data import generate_full_sample_sources
 from macrocredit.data import (
     fetch_cdx,
     fetch_vix,
     fetch_etf,
-    FileSource,
-    compute_spread_changes,
-    compute_returns,
-    align_multiple_series,
-    compute_rolling_zscore,
 )
-from macrocredit.persistence import save_parquet
 
 # Configure logging
 logging.basicConfig(
@@ -82,67 +72,40 @@ def main() -> None:
     cdx_ig_cached = fetch_cdx(sources["cdx"], index_name="CDX_IG_5Y")
     logger.info("CDX IG from cache: %d rows", len(cdx_ig_cached))
 
-    # Demonstrate transformations
-    logger.info("\nDemonstrating transformations...")
+    # Display summary statistics
+    logger.info("\nData Quality Summary:")
+    logger.info("CDX IG: %d rows, date_range=%s to %s",
+                len(cdx_ig),
+                cdx_ig.index.min().date(),
+                cdx_ig.index.max().date())
+    logger.info("  spread: mean=%.2f, min=%.2f, max=%.2f",
+                cdx_ig["spread"].mean(),
+                cdx_ig["spread"].min(),
+                cdx_ig["spread"].max())
 
-    # Compute spread changes
-    spread_changes = compute_spread_changes(cdx_ig["spread"], window=1, method="diff")
-    logger.info("Spread changes computed: mean=%.2f bp", spread_changes.mean())
+    logger.info("VIX: %d rows, date_range=%s to %s",
+                len(vix),
+                vix.index.min().date(),
+                vix.index.max().date())
+    logger.info("  close: mean=%.2f, min=%.2f, max=%.2f",
+                vix["close"].mean(),
+                vix["close"].min(),
+                vix["close"].max())
 
-    # Compute VIX returns
-    vix_returns = compute_returns(vix["close"], window=1, log_returns=False)
-    logger.info("VIX returns computed: mean=%.4f", vix_returns.mean())
+    logger.info("HYG ETF: %d rows, date_range=%s to %s",
+                len(hyg),
+                hyg.index.min().date(),
+                hyg.index.max().date())
+    logger.info("  close: mean=%.2f, min=%.2f, max=%.2f",
+                hyg["close"].mean(),
+                hyg["close"].min(),
+                hyg["close"].max())
 
-    # Compute ETF returns
-    hyg_returns = compute_returns(hyg["close"], window=1, log_returns=False)
-    logger.info("HYG returns computed: mean=%.4f", hyg_returns.mean())
-
-    # Align multiple series
-    logger.info("\nAligning multiple series...")
-    cdx_spread_aligned, vix_close_aligned = align_multiple_series(
-        cdx_ig["spread"],
-        vix["close"],
-        method="inner",
-    )
-    logger.info("Aligned series: %d common dates", len(cdx_spread_aligned))
-
-    # Compute rolling z-scores for signal normalization
-    logger.info("\nComputing rolling z-scores...")
-    spread_zscore = compute_rolling_zscore(spread_changes, window=20)
-    logger.info("Spread z-score: mean=%.2f, std=%.2f",
-                spread_zscore.mean(), spread_zscore.std())
-
-    vix_zscore = compute_rolling_zscore(vix_returns, window=20)
-    logger.info("VIX z-score: mean=%.2f, std=%.2f",
-                vix_zscore.mean(), vix_zscore.std())
-
-    # Save processed data
-    logger.info("\nSaving processed data...")
-    processed_dir = Path("data/processed")
-    processed_dir.mkdir(parents=True, exist_ok=True)
-
-    # Combine processed signals
-    import pandas as pd
-    processed = pd.DataFrame({
-        "spread": cdx_spread_aligned,
-        "spread_change": spread_changes.reindex(cdx_spread_aligned.index),
-        "spread_zscore": spread_zscore.reindex(cdx_spread_aligned.index),
-        "vix": vix_close_aligned,
-        "vix_return": vix_returns.reindex(vix_close_aligned.index),
-        "vix_zscore": vix_zscore.reindex(vix_close_aligned.index),
-    })
-
-    output_path = processed_dir / "aligned_signals.parquet"
-    save_parquet(processed, output_path)
-    logger.info("Processed data saved to: %s", output_path)
-
-    # Summary statistics
-    logger.info("\nSummary statistics:")
-    logger.info("Dataset period: %s to %s",
-                processed.index.min().date(),
-                processed.index.max().date())
-    logger.info("Total observations: %d", len(processed))
-    logger.info("Missing values: %d", processed.isna().sum().sum())
+    # Validate data integrity
+    logger.info("\nData Integrity Checks:")
+    logger.info("CDX missing values: %d", cdx_ig.isna().sum().sum())
+    logger.info("VIX missing values: %d", vix.isna().sum().sum())
+    logger.info("HYG missing values: %d", hyg.isna().sum().sum())
 
     logger.info("\nData layer demonstration complete!")
 

@@ -26,13 +26,13 @@ uv run python examples/backtest_demo.py
 ### Basic Usage
 
 ```python
-from macrocredit.data import load_cdx_data, load_vix_data
+from macrocredit.data import fetch_cdx, fetch_vix, FileSource
 from macrocredit.models import compute_cdx_vix_gap, aggregate_signals
 from macrocredit.backtest import run_backtest
 
-# Load market data
-cdx_df = load_cdx_data("data/raw/cdx_data.parquet")
-vix_df = load_vix_data("data/raw/vix_data.parquet")
+# Load market data with validation
+cdx_df = fetch_cdx(FileSource("data/raw/cdx_data.parquet"), index_name="CDX_IG_5Y")
+vix_df = fetch_vix(FileSource("data/raw/vix_data.parquet"))
 
 # Generate signals
 vix_gap = compute_cdx_vix_gap(cdx_df, vix_df)
