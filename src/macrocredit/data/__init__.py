@@ -1,15 +1,17 @@
 """
 Data layer for systematic macro credit strategy.
 
-This module handles data loading, cleaning, and transformation for:
+This module handles data fetching, cleaning, and transformation for:
 - CDX indices (IG, HY, XO) across tenors
 - VIX equity volatility index
 - Credit ETFs (HYG, LQD) used for signal generation
 
-All loaders produce standardized DataFrames with DatetimeIndex and validated schemas.
+All fetch functions produce standardized DataFrames with DatetimeIndex and validated schemas.
+Supports multiple data providers: local files, Bloomberg Terminal, APIs.
 """
 
-from .loader import load_cdx_data, load_vix_data, load_etf_data, load_all_data
+from .fetch import fetch_cdx, fetch_vix, fetch_etf
+from .sources import FileSource, BloombergSource, APISource, DataSource
 from .transform import (
     compute_spread_changes,
     compute_returns,
@@ -20,11 +22,15 @@ from .transform import (
 from .validation import validate_cdx_schema, validate_vix_schema, validate_etf_schema
 
 __all__ = [
-    # Loaders
-    "load_cdx_data",
-    "load_vix_data",
-    "load_etf_data",
-    "load_all_data",
+    # Fetch functions
+    "fetch_cdx",
+    "fetch_vix",
+    "fetch_etf",
+    # Data sources
+    "FileSource",
+    "BloombergSource",
+    "APISource",
+    "DataSource",
     # Transforms
     "compute_spread_changes",
     "compute_returns",

@@ -33,6 +33,10 @@ viz = [
     "plotly>=5.24.0",
     "streamlit>=1.39.0",
 ]
+bloomberg = [
+    "blpapi",
+    "xbbg>=0.8.0",
+]
 
 [tool.pytest.ini_options]
 pythonpath = "src"

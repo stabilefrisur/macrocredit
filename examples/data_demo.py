@@ -27,12 +27,12 @@ Key Features:
 import logging
 from pathlib import Path
 
-from macrocredit.data.sample_data import generate_full_sample_dataset
+from macrocredit.data.sample_data import generate_full_sample_sources
 from macrocredit.data import (
-    load_cdx_data,
-    load_vix_data,
-    load_etf_data,
-    load_all_data,
+    fetch_cdx,
+    fetch_vix,
+    fetch_etf,
+    FileSource,
     compute_spread_changes,
     compute_returns,
     align_multiple_series,
@@ -52,40 +52,35 @@ def main() -> None:
     """Run data layer demonstration."""
     logger.info("Starting data layer demonstration")
 
-    # Generate sample data
+    # Generate sample data and get FileSource configs
     logger.info("Generating sample dataset...")
-    file_paths = generate_full_sample_dataset(
+    sources = generate_full_sample_sources(
         output_dir="data/raw",
         start_date="2023-01-01",
         periods=252,
         seed=42,
     )
 
-    logger.info("Sample data files created:")
-    for data_type, path in file_paths.items():
-        logger.info("  %s: %s", data_type, path)
+    logger.info("Sample data sources created:")
+    for data_type, source in sources.items():
+        logger.info("  %s: %s", data_type, source.path)
 
-    # Load individual data sources
-    logger.info("\nLoading data sources individually...")
+    # Fetch individual data sources
+    logger.info("\nFetching data sources individually...")
 
-    cdx_ig = load_cdx_data(file_paths["cdx"], index_name="CDX_IG_5Y")
-    logger.info("CDX IG loaded: %d rows, spread_mean=%.2f", len(cdx_ig), cdx_ig["spread"].mean())
+    cdx_ig = fetch_cdx(sources["cdx"], index_name="CDX_IG_5Y")
+    logger.info("CDX IG fetched: %d rows, spread_mean=%.2f", len(cdx_ig), cdx_ig["spread"].mean())
 
-    vix = load_vix_data(file_paths["vix"])
-    logger.info("VIX loaded: %d rows, vix_mean=%.2f", len(vix), vix["close"].mean())
+    vix = fetch_vix(sources["vix"])
+    logger.info("VIX fetched: %d rows, vix_mean=%.2f", len(vix), vix["close"].mean())
 
-    hyg = load_etf_data(file_paths["etf"], ticker="HYG")
-    logger.info("HYG loaded: %d rows, price_mean=%.2f", len(hyg), hyg["close"].mean())
+    hyg = fetch_etf(sources["etf"], ticker="HYG")
+    logger.info("HYG fetched: %d rows, price_mean=%.2f", len(hyg), hyg["close"].mean())
 
-    # Load all data at once
-    logger.info("\nLoading all data at once...")
-    data = load_all_data(
-        cdx_path=file_paths["cdx"],
-        vix_path=file_paths["vix"],
-        etf_path=file_paths["etf"],
-    )
-    logger.info("All data loaded: cdx=%d, vix=%d, etf=%d",
-                len(data["cdx"]), len(data["vix"]), len(data["etf"]))
+    # Demonstrate caching by fetching again
+    logger.info("\nDemonstrating cache functionality...")
+    cdx_ig_cached = fetch_cdx(sources["cdx"], index_name="CDX_IG_5Y")
+    logger.info("CDX IG from cache: %d rows", len(cdx_ig_cached))
 
     # Demonstrate transformations
     logger.info("\nDemonstrating transformations...")

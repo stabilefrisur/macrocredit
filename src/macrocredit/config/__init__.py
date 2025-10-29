@@ -6,7 +6,7 @@ and default parameters for the CDX overlay strategy.
 """
 
 from pathlib import Path
-from typing import Final
+from typing import Final, Any
 
 # Project root and data directories
 # From src/macrocredit/config/__init__.py -> src/macrocredit -> src -> project_root
@@ -42,6 +42,22 @@ DEFAULT_SIGNAL_PARAMS: Final[dict[str, int | float]] = {
 # Data versioning
 DATA_VERSION: Final[str] = "0.1.0"
 
+# Cache configuration
+CACHE_ENABLED: Final[bool] = True
+CACHE_TTL_DAYS: Final[dict[str, int | None]] = {
+    "cdx": 1,  # Daily refresh for market data
+    "vix": 1,
+    "etf": 1,
+}
+
+# Default data sources (can be overridden per fetch call)
+# Set to None to require explicit source in fetch calls
+DEFAULT_DATA_SOURCES: Final[dict[str, Any]] = {
+    "cdx": None,
+    "vix": None,
+    "etf": None,
+}
+
 
 def ensure_directories() -> None:
     """
@@ -54,6 +70,7 @@ def ensure_directories() -> None:
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
     (DATA_DIR / "raw").mkdir(exist_ok=True)
     (DATA_DIR / "processed").mkdir(exist_ok=True)
+    (DATA_DIR / "cache").mkdir(exist_ok=True)
 
 
 # Initialize directories on module import

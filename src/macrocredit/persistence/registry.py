@@ -17,6 +17,9 @@ from .parquet_io import load_parquet
 
 logger = logging.getLogger(__name__)
 
+# Module-level registry path constant
+REGISTRY_PATH = Path(__file__).parent.parent.parent.parent / "data" / "registry.json"
+
 
 @dataclass
 class DatasetEntry:

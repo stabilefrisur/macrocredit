@@ -1,18 +1,18 @@
 """
-Sample data generators for testing and demonstration.
+Synthetic data generation for testing and demonstrations.
 
-Creates synthetic market data matching production schemas for:
-- CDX indices across tenors and series
-- VIX volatility with realistic dynamics
-- Credit ETF prices with flow characteristics
-
-All generators produce deterministic data when seeded.
+Generates realistic market data for CDX, VIX, and ETF instruments
+with configurable volatility, correlation, and trend parameters.
 """
 
 import logging
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+from ..persistence.parquet_io import save_parquet
+from .sources import FileSource
 
 logger = logging.getLogger(__name__)
 
@@ -345,3 +345,42 @@ def generate_full_sample_dataset(
 
     logger.info("Sample dataset generated: %s", file_paths)
     return file_paths
+
+
+def generate_full_sample_sources(
+    output_dir: str = "data/raw",
+    start_date: str = "2023-01-01",
+    periods: int = 252,
+    seed: int = 42,
+) -> dict[str, FileSource]:
+    """
+    Generate complete sample dataset and return FileSource configs.
+
+    Parameters
+    ----------
+    output_dir : str, default "data/raw"
+        Directory to save Parquet files.
+    start_date : str, default "2023-01-01"
+        Start date for all time series.
+    periods : int, default 252
+        Number of daily observations.
+    seed : int, default 42
+        Random seed for reproducibility.
+
+    Returns
+    -------
+    dict[str, FileSource]
+        Dictionary mapping data type to FileSource configuration.
+
+    Notes
+    -----
+    Convenience wrapper around generate_full_sample_dataset that returns
+    FileSource objects ready to use with fetch functions.
+    """
+    file_paths = generate_full_sample_dataset(output_dir, start_date, periods, seed)
+
+    return {
+        "cdx": FileSource(Path(file_paths["cdx"])),
+        "vix": FileSource(Path(file_paths["vix"])),
+        "etf": FileSource(Path(file_paths["etf"])),
+    }

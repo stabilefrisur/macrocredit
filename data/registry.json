@@ -1,4 +1,57 @@
 {
+  "cache_cdx_c681afa309f24571": {
+    "end_date": "2023-09-09T00:00:00",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\cache\\file\\cdx_c681afa309f24571.parquet",
+    "instrument": "cdx",
+    "last_updated": null,
+    "metadata": {
+      "cache_key": "c681afa309f24571",
+      "cached_at": "2025-10-29T22:38:46.275887",
+      "params": {
+        "index_name": "CDX_IG_5Y",
+        "tenor": null
+      },
+      "provider": "file"
+    },
+    "registered_at": "2025-10-29T22:38:46.285163",
+    "row_count": 252,
+    "start_date": "2023-01-01T00:00:00",
+    "tenor": null
+  },
+  "cache_etf_0537080140eed0ee": {
+    "end_date": "2023-09-09T00:00:00",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\cache\\file\\etf_0537080140eed0ee.parquet",
+    "instrument": "etf",
+    "last_updated": null,
+    "metadata": {
+      "cache_key": "0537080140eed0ee",
+      "cached_at": "2025-10-29T22:38:46.365901",
+      "params": {
+        "ticker": "HYG"
+      },
+      "provider": "file"
+    },
+    "registered_at": "2025-10-29T22:38:46.376969",
+    "row_count": 252,
+    "start_date": "2023-01-01T00:00:00",
+    "tenor": null
+  },
+  "cache_vix_d09015690dfa93d9": {
+    "end_date": "2023-09-09T00:00:00",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\cache\\file\\vix_d09015690dfa93d9.parquet",
+    "instrument": "vix",
+    "last_updated": null,
+    "metadata": {
+      "cache_key": "d09015690dfa93d9",
+      "cached_at": "2025-10-29T22:38:46.323949",
+      "params": {},
+      "provider": "file"
+    },
+    "registered_at": "2025-10-29T22:38:46.338206",
+    "row_count": 252,
+    "start_date": "2023-01-01T00:00:00",
+    "tenor": null
+  },
   "cdx_hy_5y": {
     "end_date": "2024-10-25T00:00:00",
     "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\cdx_hy_5y.parquet",
