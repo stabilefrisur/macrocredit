@@ -32,6 +32,8 @@ dev = [
 viz = [
     "plotly>=5.24.0",
     "streamlit>=1.39.0",
+    "nbformat>=5.10.0",
+    "ipykernel>=6.29.0",
 ]
 bloomberg = [
     "xbbg>=0.7.0",
