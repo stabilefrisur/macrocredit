@@ -68,11 +68,12 @@ Use relative imports and avoid global state.
 ## Agent Behavior Guidelines
 
 ### General
-1. **Always prioritize modular, PEP 8‑compliant, type‑annotated code.**
+1. **Always prioritize modular, PEP 8‑compliant, type‑annotated code.**
 2. **Never mix strategy logic with infrastructure code.**
 3. **Always document functions and classes using NumPy‑style docstrings.**
 4. **Propose structured changes — not isolated code fragments.**
 5. **Assume collaboration**: other developers must read and extend your code easily.
+6. **No backward compatibility required**: This is an early-stage project. Use modern best practices without legacy concerns.
 
 ### Style
 - Follow **PEP 8** and **type hints** strictly.
@@ -275,6 +276,7 @@ def compute_vix_cdx_gap(
 - Write tutorial-style docs that duplicate runnable examples.
 - Implement authentication, authorization, or credential management (handled externally).
 - Create connection setup code for data providers (connections established outside project).
+- Worry about backward compatibility or legacy code (early-stage project, use best practices).
 
 ---
 
