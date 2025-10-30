@@ -54,9 +54,8 @@ def main() -> None:
     enabled_signals = registry.get_enabled()
     for name, metadata in enabled_signals.items():
         logger.info(
-            "Signal: %s (weight=%.2f)\n  %s",
+            "Signal: %s\n  %s",
             name,
-            metadata.default_weight,
             metadata.description,
         )
 
@@ -89,17 +88,17 @@ def main() -> None:
             valid.max(),
         )
 
-    # Build weights from catalog defaults
-    weights = {name: meta.default_weight for name, meta in enabled_signals.items()}
+    # Demonstrate equal-weight aggregation (default)
+    logger.info("\n=== Equal-Weight Aggregation (Default) ===")
+    signal_names = list(enabled_signals.keys())
+    logger.info("Using equal weights for %d signals: %s", len(signal_names), signal_names)
     
-    # Create aggregator config
-    agg_config = AggregatorConfig(signal_weights=weights)
+    # Create aggregator config with equal weights
+    agg_config = AggregatorConfig(signal_names=signal_names)
+    logger.info("Computed weights: %s", agg_config.signal_weights)
     
-    logger.info("\n=== Aggregating Signals ===")
-    logger.info("Weights: %s", weights)
-    
-    # Aggregate signals
-    composite = aggregate_signals(signals, weights)
+    # Aggregate signals (can omit weights parameter for equal-weight)
+    composite = aggregate_signals(signals)
 
     # Generate positions
     threshold = 1.5

@@ -7,9 +7,40 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
+def compute_equal_weights(signal_names: list[str]) -> dict[str, float]:
+    """
+    Generate equal-weight dictionary for signal aggregation.
+
+    Parameters
+    ----------
+    signal_names : list[str]
+        Names of signals to weight equally.
+
+    Returns
+    -------
+    dict[str, float]
+        Mapping from signal names to equal weights (each = 1/N).
+
+    Raises
+    ------
+    ValueError
+        If signal_names is empty.
+
+    Examples
+    --------
+    >>> compute_equal_weights(["basis", "momentum", "gap"])
+    {"basis": 0.333..., "momentum": 0.333..., "gap": 0.333...}
+    """
+    if not signal_names:
+        raise ValueError("signal_names cannot be empty")
+
+    weight = 1.0 / len(signal_names)
+    return {name: weight for name in signal_names}
+
+
 def aggregate_signals(
     signals: dict[str, pd.Series],
-    weights: dict[str, float],
+    weights: dict[str, float] | None = None,
 ) -> pd.Series:
     """
     Combine individual signals into weighted composite positioning score.
@@ -23,9 +54,10 @@ def aggregate_signals(
     signals : dict[str, pd.Series]
         Mapping from signal names to z-score normalized signal series.
         Example: {"cdx_etf_basis": basis_series, "cdx_vix_gap": gap_series}
-    weights : dict[str, float]
+    weights : dict[str, float] | None, default None
         Mapping from signal names to weights (must sum to 1.0).
         All keys must exist in signals dict.
+        If None, equal weights are computed automatically (1/N for N signals).
 
     Returns
     -------
@@ -48,9 +80,17 @@ def aggregate_signals(
     Examples
     --------
     >>> signals = {"basis": basis_series, "momentum": mom_series}
+    >>> # Equal weights (default)
+    >>> composite = aggregate_signals(signals)
+    >>> # Custom weights
     >>> weights = {"basis": 0.6, "momentum": 0.4}
     >>> composite = aggregate_signals(signals, weights)
     """
+    # Use equal weights if not provided
+    if weights is None:
+        weights = compute_equal_weights(list(signals.keys()))
+        logger.debug("Using equal weights for %d signals", len(weights))
+
     # Validate all weights have corresponding signals
     missing_signals = set(weights.keys()) - set(signals.keys())
     if missing_signals:

@@ -3,15 +3,15 @@ Backtest Layer Demonstration - Complete Strategy Evaluation
 
 Demonstrates end-to-end backtest workflow:
 1. Generate synthetic market data (504 trading days, ~2 years)
-2. Compute individual signals (basis, gap, momentum)
-3. Aggregate signals with custom weights
+2. Compute all registered signals using signal catalog
+3. Aggregate signals with equal weights (default convention)
 4. Run backtest with entry/exit rules and transaction costs
 5. Compute comprehensive performance metrics:
    - Risk-adjusted returns (Sharpe, Sortino, Calmar ratios)
    - Drawdown analysis
    - Win rate and profit factor
    - Trade statistics and holding periods
-6. Analyze trade history and exposure distribution
+6. Compare equal-weight vs custom-weight performance
 
 Output: Performance metrics, P&L analysis, trade-by-trade details
 
@@ -24,15 +24,15 @@ Configuration:
 """
 
 import logging
+from pathlib import Path
 
 from example_data import generate_example_data
 from macrocredit.models import (
-    aggregate_signals,
-    compute_cdx_etf_basis,
-    compute_cdx_vix_gap,
-    compute_spread_momentum,
-    AggregatorConfig,
+    SignalRegistry,
     SignalConfig,
+    AggregatorConfig,
+    compute_registered_signals,
+    aggregate_signals,
 )
 from macrocredit.backtest import (
     BacktestConfig,
@@ -61,33 +61,32 @@ def main() -> None:
         periods=504,
     )
     print(f"    Generated {len(cdx_df)} days of synthetic data")
+    
+    market_data = {
+        "cdx": cdx_df,
+        "vix": vix_df,
+        "etf": etf_df,
+    }
 
-    # 2. Compute signals
-    print("\n[2] Computing individual signals...")
+    # 2. Load signal registry and compute signals
+    print("\n[2] Computing signals from registry...")
+    catalog_path = Path(__file__).parent.parent / "src/macrocredit/models/signal_catalog.json"
+    registry = SignalRegistry(catalog_path)
     signal_config = SignalConfig(lookback=20, min_periods=10)
+    
+    signals = compute_registered_signals(registry, market_data, signal_config)
+    
+    for name, signal in signals.items():
+        print(f"    {name}: {signal.notna().sum()} valid observations")
 
-    basis = compute_cdx_etf_basis(cdx_df, etf_df, signal_config)
-    gap = compute_cdx_vix_gap(cdx_df, vix_df, signal_config)
-    momentum = compute_spread_momentum(cdx_df, signal_config)
+    # 3. Aggregate signals with equal weights (default)
+    print("\n[3] Aggregating signals (equal-weight)...")
+    composite_equal = aggregate_signals(signals)  # Equal weights by default
+    print(f"    Composite signal: mean={composite_equal.mean():.3f}, std={composite_equal.std():.3f}")
+    print(f"    Range: [{composite_equal.min():.2f}, {composite_equal.max():.2f}]")
 
-    print(f"    CDX-ETF basis: {basis.notna().sum()} valid observations")
-    print(f"    CDX-VIX gap: {gap.notna().sum()} valid observations")
-    print(f"    Spread momentum: {momentum.notna().sum()} valid observations")
-
-    # 3. Aggregate signals
-    print("\n[3] Aggregating signals into composite score...")
-    agg_config = AggregatorConfig(
-        cdx_etf_basis_weight=0.4,
-        cdx_vix_gap_weight=0.4,
-        spread_momentum_weight=0.2,
-    )
-
-    composite = aggregate_signals(basis, gap, momentum, agg_config)
-    print(f"    Composite signal: mean={composite.mean():.3f}, std={composite.std():.3f}")
-    print(f"    Range: [{composite.min():.2f}, {composite.max():.2f}]")
-
-    # 4. Run backtest
-    print("\n[4] Running backtest...")
+    # 4. Run backtest with equal-weight composite
+    print("\n[4] Running backtest (equal-weight)...")
     backtest_config = BacktestConfig(
         entry_threshold=1.5,
         exit_threshold=0.75,
@@ -97,7 +96,7 @@ def main() -> None:
         dv01_per_million=4750.0,
     )
 
-    result = run_backtest(composite, cdx_df["spread"], backtest_config)
+    result = run_backtest(composite_equal, cdx_df["spread"], backtest_config)
 
     print(f"\n    Backtest period: {result.metadata['summary']['start_date']} to "
           f"{result.metadata['summary']['end_date']}")
@@ -165,6 +164,26 @@ def main() -> None:
     print(f"  Long credit:     {long_days:>4} days ({long_days/total_days:>5.1%})")
     print(f"  Short credit:    {short_days:>4} days ({short_days/total_days:>5.1%})")
     print(f"  Flat:            {flat_days:>4} days ({flat_days/total_days:>5.1%})")
+
+    # 9. Compare with custom weights
+    print("\n[9] Custom weight comparison:")
+    print("-" * 70)
+    
+    custom_weights = {
+        "cdx_etf_basis": 0.5,
+        "cdx_vix_gap": 0.3,
+        "spread_momentum": 0.2,
+    }
+    
+    print(f"  Testing custom weights: {custom_weights}")
+    composite_custom = aggregate_signals(signals, custom_weights)
+    result_custom = run_backtest(composite_custom, cdx_df["spread"], backtest_config)
+    metrics_custom = compute_performance_metrics(result_custom.pnl, result_custom.positions)
+    
+    print(f"\n  Equal-weight Sharpe:    {metrics.sharpe_ratio:>8.2f}")
+    print(f"  Custom-weight Sharpe:   {metrics_custom.sharpe_ratio:>8.2f}")
+    print(f"\n  Equal-weight Total P&L:  ${result.metadata['summary']['total_pnl']:>10,.0f}")
+    print(f"  Custom-weight Total P&L: ${result_custom.metadata['summary']['total_pnl']:>10,.0f}")
 
     print("\n" + "=" * 70)
     print("DEMONSTRATION COMPLETE")

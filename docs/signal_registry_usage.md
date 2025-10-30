@@ -88,7 +88,6 @@ Edit `src/macrocredit/models/signal_catalog.json`:
       "other": "column_name"
     },
     "arg_mapping": ["cdx", "other"],
-    "default_weight": 0.25,
     "enabled": true
   }
 ]
@@ -100,6 +99,9 @@ Edit `src/macrocredit/models/signal_catalog.json`:
 # Registry automatically picks up the new signal
 signals = compute_registered_signals(registry, market_data, config)
 # Now includes "my_new_signal"
+
+# Aggregate with equal weights (default)
+composite = aggregate_signals(signals)
 ```
 
 ## Signal Catalog Schema
@@ -113,7 +115,6 @@ signals = compute_registered_signals(registry, market_data, config)
 | `compute_function_name` | string | Function name in `signals.py` module |
 | `data_requirements` | dict | Map of data keys to required column names |
 | `arg_mapping` | list | Ordered list of data keys for function arguments |
-| `default_weight` | float | Default aggregation weight (0.0 to 1.0) |
 | `enabled` | boolean | Whether to compute this signal |
 
 ### Example Entry
@@ -128,7 +129,6 @@ signals = compute_registered_signals(registry, market_data, config)
     "etf": "close"
   },
   "arg_mapping": ["cdx", "etf"],
-  "default_weight": 0.35,
   "enabled": true
 }
 ```
@@ -139,22 +139,37 @@ signals = compute_registered_signals(registry, market_data, config)
 
 Set `"enabled": false` in catalog JSON, then reload registry.
 
-### Test Different Weights
+### Equal-Weight Aggregation (Default)
+
+By default, signals are aggregated with equal weights:
 
 ```python
-# Use catalog defaults
+# Get enabled signals
 enabled = registry.get_enabled()
-default_weights = {name: meta.default_weight for name, meta in enabled.items()}
+signal_names = list(enabled.keys())
 
-# Try custom weights
+# Aggregate with equal weights (default)
+composite = aggregate_signals(signals)  # Each signal gets 1/N weight
+
+# Or explicitly create equal-weight config
+agg_config = AggregatorConfig(signal_names=signal_names)
+print(agg_config.signal_weights)  # {'sig1': 0.333..., 'sig2': 0.333..., ...}
+```
+
+### Test Custom Weights
+
+```python
+# Try custom weights (must sum to 1.0)
 custom_weights = {
     "cdx_etf_basis": 0.60,
     "cdx_vix_gap": 0.25,
     "spread_momentum": 0.15,
 }
 
-composite_default = aggregate_signals(signals, default_weights)
 composite_custom = aggregate_signals(signals, custom_weights)
+
+# Or use AggregatorConfig
+agg_config = AggregatorConfig(signal_weights=custom_weights)
 ```
 
 ### Run Subset of Signals
@@ -165,7 +180,7 @@ Modify catalog to disable unwanted signals, or manually filter:
 # Compute all signals
 all_signals = compute_registered_signals(registry, market_data, config)
 
-# Use subset for aggregation
+# Use subset for aggregation (equal weights)
 subset_signals = {
     "cdx_etf_basis": all_signals["cdx_etf_basis"],
     "spread_momentum": all_signals["spread_momentum"],

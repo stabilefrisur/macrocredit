@@ -71,7 +71,6 @@ def test_compute_registered_signals_with_disabled(mock_market_data: dict[str, pd
             "compute_function_name": "compute_spread_momentum",
             "data_requirements": {"cdx": "spread"},
             "arg_mapping": ["cdx"],
-            "default_weight": 1.0,
             "enabled": True,
         },
         {
@@ -80,7 +79,6 @@ def test_compute_registered_signals_with_disabled(mock_market_data: dict[str, pd
             "compute_function_name": "compute_cdx_etf_basis",
             "data_requirements": {"cdx": "spread", "etf": "close"},
             "arg_mapping": ["cdx", "etf"],
-            "default_weight": 0.0,
             "enabled": False,
         },
     ]
@@ -110,7 +108,6 @@ def test_compute_registered_signals_missing_data_key() -> None:
             "compute_function_name": "compute_cdx_etf_basis",
             "data_requirements": {"cdx": "spread", "etf": "close"},
             "arg_mapping": ["cdx", "etf"],
-            "default_weight": 1.0,
             "enabled": True,
         },
     ]
@@ -141,7 +138,6 @@ def test_compute_registered_signals_missing_column() -> None:
             "compute_function_name": "compute_cdx_etf_basis",
             "data_requirements": {"cdx": "spread", "etf": "close"},
             "arg_mapping": ["cdx", "etf"],
-            "default_weight": 1.0,
             "enabled": True,
         },
     ]
@@ -173,7 +169,6 @@ def test_compute_registered_signals_invalid_function_name() -> None:
             "compute_function_name": "nonexistent_function",
             "data_requirements": {"cdx": "spread"},
             "arg_mapping": ["cdx"],
-            "default_weight": 1.0,
             "enabled": True,
         },
     ]
@@ -202,7 +197,6 @@ def test_validate_data_requirements_success() -> None:
         compute_function_name="compute_test",
         data_requirements={"cdx": "spread", "vix": "close"},
         arg_mapping=["cdx", "vix"],
-        default_weight=1.0,
     )
     
     market_data = {
@@ -222,7 +216,6 @@ def test_validate_data_requirements_missing_key() -> None:
         compute_function_name="compute_test",
         data_requirements={"cdx": "spread", "missing_key": "close"},
         arg_mapping=["cdx"],
-        default_weight=1.0,
     )
     
     market_data = {
@@ -241,7 +234,6 @@ def test_validate_data_requirements_missing_column() -> None:
         compute_function_name="compute_test",
         data_requirements={"cdx": "missing_column"},
         arg_mapping=["cdx"],
-        default_weight=1.0,
     )
     
     market_data = {

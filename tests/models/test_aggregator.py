@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from macrocredit.models.aggregator import aggregate_signals
+from macrocredit.models.aggregator import aggregate_signals, compute_equal_weights
 from macrocredit.models.config import AggregatorConfig, SignalConfig
 
 
@@ -204,7 +204,7 @@ def test_aggregator_config_weight_validation() -> None:
 
 
 def test_aggregator_config_empty_weights_validation() -> None:
-    """Test that AggregatorConfig rejects empty weights."""
+    """Test that AggregatorConfig rejects empty weights dict."""
     with pytest.raises(ValueError, match="signal_weights cannot be empty"):
         AggregatorConfig(signal_weights={})
 
@@ -244,4 +244,100 @@ def test_signal_config_validation() -> None:
     # Invalid min_periods > lookback
     with pytest.raises(ValueError, match="min_periods.*cannot exceed lookback"):
         SignalConfig(lookback=10, min_periods=15)
+
+
+def test_compute_equal_weights_three_signals() -> None:
+    """Test equal-weight computation with three signals."""
+    signal_names = ["cdx_etf_basis", "cdx_vix_gap", "spread_momentum"]
+    weights = compute_equal_weights(signal_names)
+
+    assert len(weights) == 3
+    assert all(name in weights for name in signal_names)
+    expected_weight = 1.0 / 3.0
+    for weight in weights.values():
+        assert abs(weight - expected_weight) < 1e-10
+    assert abs(sum(weights.values()) - 1.0) < 1e-10
+
+
+def test_compute_equal_weights_two_signals() -> None:
+    """Test equal-weight computation with two signals."""
+    signal_names = ["signal_a", "signal_b"]
+    weights = compute_equal_weights(signal_names)
+
+    assert len(weights) == 2
+    assert weights["signal_a"] == 0.5
+    assert weights["signal_b"] == 0.5
+
+
+def test_compute_equal_weights_five_signals() -> None:
+    """Test equal-weight computation with five signals."""
+    signal_names = ["sig1", "sig2", "sig3", "sig4", "sig5"]
+    weights = compute_equal_weights(signal_names)
+
+    assert len(weights) == 5
+    expected_weight = 0.2
+    for weight in weights.values():
+        assert abs(weight - expected_weight) < 1e-10
+
+
+def test_compute_equal_weights_empty_raises_error() -> None:
+    """Test that empty signal list raises ValueError."""
+    with pytest.raises(ValueError, match="signal_names cannot be empty"):
+        compute_equal_weights([])
+
+
+def test_aggregate_signals_equal_weights_default(
+    sample_signals_dict: dict[str, pd.Series],
+) -> None:
+    """Test that omitting weights uses equal-weight default."""
+    result = aggregate_signals(sample_signals_dict)
+
+    assert isinstance(result, pd.Series)
+    assert len(result) == 100
+    # With equal weights (0.333... each), result should be valid
+    assert result.notna().all()
+
+
+def test_aggregate_signals_equal_weights_explicit() -> None:
+    """Test aggregation with explicitly computed equal weights."""
+    dates = pd.date_range("2024-01-01", periods=3, freq="D")
+    
+    signals = {
+        "signal_a": pd.Series([1.0, 2.0, 3.0], index=dates),
+        "signal_b": pd.Series([2.0, 3.0, 4.0], index=dates),
+        "signal_c": pd.Series([3.0, 4.0, 5.0], index=dates),
+    }
+
+    # Test with None (equal weights)
+    result = aggregate_signals(signals, weights=None)
+
+    # Manual calculation with equal weights (1/3 each)
+    # First value: (1.0 + 2.0 + 3.0) / 3 = 2.0
+    expected_first = 2.0
+    assert abs(result.iloc[0] - expected_first) < 1e-10
+
+
+def test_aggregator_config_with_signal_names() -> None:
+    """Test AggregatorConfig computes equal weights from signal names."""
+    config = AggregatorConfig(
+        signal_names=["cdx_etf_basis", "cdx_vix_gap", "spread_momentum"]
+    )
+
+    assert config.signal_weights is not None
+    assert len(config.signal_weights) == 3
+    expected_weight = 1.0 / 3.0
+    for weight in config.signal_weights.values():
+        assert abs(weight - expected_weight) < 1e-10
+
+
+def test_aggregator_config_no_params_raises_error() -> None:
+    """Test that AggregatorConfig requires either weights or names."""
+    with pytest.raises(ValueError, match="Must provide either signal_weights or signal_names"):
+        AggregatorConfig()
+
+
+def test_aggregator_config_empty_signal_names_raises_error() -> None:
+    """Test that empty signal_names raises ValueError."""
+    with pytest.raises(ValueError, match="signal_names cannot be empty"):
+        AggregatorConfig(signal_names=[])
 

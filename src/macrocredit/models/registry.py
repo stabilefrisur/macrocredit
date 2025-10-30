@@ -29,8 +29,6 @@ class SignalMetadata:
     arg_mapping : list[str]
         Ordered list of data keys to pass as positional arguments to compute function.
         Example: ["cdx", "etf"] means call compute_fn(market_data["cdx"], market_data["etf"], config)
-    default_weight : float
-        Default weight for signal aggregation (0.0 to 1.0).
     enabled : bool
         Whether signal should be included in computation.
     """
@@ -40,7 +38,6 @@ class SignalMetadata:
     compute_function_name: str
     data_requirements: dict[str, str]
     arg_mapping: list[str]
-    default_weight: float
     enabled: bool = True
 
     def __post_init__(self) -> None:
@@ -49,10 +46,6 @@ class SignalMetadata:
             raise ValueError("Signal name cannot be empty")
         if not self.compute_function_name:
             raise ValueError("Compute function name cannot be empty")
-        if not 0.0 <= self.default_weight <= 1.0:
-            raise ValueError(
-                f"Default weight must be in [0, 1], got {self.default_weight}"
-            )
         if not self.arg_mapping:
             raise ValueError("arg_mapping cannot be empty")
         # Validate arg_mapping is subset of data_requirements keys

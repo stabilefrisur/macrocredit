@@ -21,7 +21,6 @@ def sample_catalog_data() -> list[dict]:
             "compute_function_name": "compute_test_a",
             "data_requirements": {"cdx": "spread"},
             "arg_mapping": ["cdx"],
-            "default_weight": 0.5,
             "enabled": True,
         },
         {
@@ -30,7 +29,6 @@ def sample_catalog_data() -> list[dict]:
             "compute_function_name": "compute_test_b",
             "data_requirements": {"cdx": "spread", "vix": "close"},
             "arg_mapping": ["cdx", "vix"],
-            "default_weight": 0.5,
             "enabled": True,
         },
     ]
@@ -54,13 +52,11 @@ def test_signal_metadata_creation() -> None:
         compute_function_name="compute_test",
         data_requirements={"cdx": "spread"},
         arg_mapping=["cdx"],
-        default_weight=0.5,
         enabled=True,
     )
     
     assert metadata.name == "test_signal"
     assert metadata.compute_function_name == "compute_test"
-    assert metadata.default_weight == 0.5
     assert metadata.enabled is True
 
 
@@ -73,7 +69,6 @@ def test_signal_metadata_validates_name() -> None:
             compute_function_name="compute_test",
             data_requirements={"cdx": "spread"},
             arg_mapping=["cdx"],
-            default_weight=0.5,
         )
 
 
@@ -86,32 +81,6 @@ def test_signal_metadata_validates_function_name() -> None:
             compute_function_name="",
             data_requirements={"cdx": "spread"},
             arg_mapping=["cdx"],
-            default_weight=0.5,
-        )
-
-
-def test_signal_metadata_validates_weight_range() -> None:
-    """Test that SignalMetadata validates weight range."""
-    # Too low
-    with pytest.raises(ValueError, match="Default weight must be in"):
-        SignalMetadata(
-            name="test",
-            description="Test",
-            compute_function_name="compute_test",
-            data_requirements={"cdx": "spread"},
-            arg_mapping=["cdx"],
-            default_weight=-0.1,
-        )
-    
-    # Too high
-    with pytest.raises(ValueError, match="Default weight must be in"):
-        SignalMetadata(
-            name="test",
-            description="Test",
-            compute_function_name="compute_test",
-            data_requirements={"cdx": "spread"},
-            arg_mapping=["cdx"],
-            default_weight=1.5,
         )
 
 
@@ -125,7 +94,6 @@ def test_signal_metadata_validates_arg_mapping() -> None:
             compute_function_name="compute_test",
             data_requirements={"cdx": "spread"},
             arg_mapping=[],
-            default_weight=0.5,
         )
     
     # arg_mapping contains key not in data_requirements
@@ -136,7 +104,6 @@ def test_signal_metadata_validates_arg_mapping() -> None:
             compute_function_name="compute_test",
             data_requirements={"cdx": "spread"},
             arg_mapping=["cdx", "vix"],  # vix not in data_requirements
-            default_weight=0.5,
         )
 
 
@@ -193,7 +160,6 @@ def test_signal_registry_get_enabled_filters_disabled() -> None:
             "compute_function_name": "compute_enabled",
             "data_requirements": {"cdx": "spread"},
             "arg_mapping": ["cdx"],
-            "default_weight": 0.6,
             "enabled": True,
         },
         {
@@ -202,7 +168,6 @@ def test_signal_registry_get_enabled_filters_disabled() -> None:
             "compute_function_name": "compute_disabled",
             "data_requirements": {"cdx": "spread"},
             "arg_mapping": ["cdx"],
-            "default_weight": 0.4,
             "enabled": False,
         },
     ]
@@ -248,7 +213,6 @@ def test_signal_registry_duplicate_names_raises_error() -> None:
             "compute_function_name": "compute_a",
             "data_requirements": {"cdx": "spread"},
             "arg_mapping": ["cdx"],
-            "default_weight": 0.5,
             "enabled": True,
         },
         {
@@ -257,7 +221,6 @@ def test_signal_registry_duplicate_names_raises_error() -> None:
             "compute_function_name": "compute_b",
             "data_requirements": {"cdx": "spread"},
             "arg_mapping": ["cdx"],
-            "default_weight": 0.5,
             "enabled": True,
         },
     ]

@@ -8,7 +8,6 @@
       "etf": "close"
     },
     "arg_mapping": ["cdx", "etf"],
-    "default_weight": 0.35,
     "enabled": true
   },
   {
@@ -20,7 +19,6 @@
       "vix": "close"
     },
     "arg_mapping": ["cdx", "vix"],
-    "default_weight": 0.35,
     "enabled": true
   },
   {
@@ -31,7 +29,6 @@
       "cdx": "spread"
     },
     "arg_mapping": ["cdx"],
-    "default_weight": 0.30,
     "enabled": true
   }
 ]
