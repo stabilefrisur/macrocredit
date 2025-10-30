@@ -1,14 +1,18 @@
 """
-Models Layer Demonstration - Signal Generation and Aggregation
+Models Layer Demonstration - Signal Registry Pattern
 
-Demonstrates the complete signal generation workflow:
-1. Generate synthetic CDX, VIX, and ETF market data (252 trading days)
-2. Compute three individual signals:
-   - CDX-ETF basis: Arbitrage signal from cash-derivative spread
-   - CDX-VIX gap: Cross-asset risk sentiment divergence
-   - Spread momentum: Short-term trend in credit spreads
-3. Aggregate signals with custom weights into composite score
-4. Generate position recommendations from composite score
+Demonstrates the scalable signal generation workflow using registry pattern:
+1. Load signal catalog from JSON
+2. Generate synthetic CDX, VIX, and ETF market data (252 trading days)
+3. Compute all enabled signals using registry orchestration
+4. Aggregate signals dynamically with configurable weights
+5. Generate position recommendations from composite score
+
+The registry pattern enables:
+- Adding new signals without changing code (just update catalog JSON)
+- Enabling/disabling signals for experimentation
+- Dynamic signal composition with arbitrary weights
+- Centralized signal metadata and documentation
 
 Output: Signal statistics, position distribution, and sample recommendations
 
@@ -18,16 +22,16 @@ Note: All signals follow the convention:
 """
 
 import logging
+from pathlib import Path
 import pandas as pd
 
 from example_data import generate_example_data
 from macrocredit.models import (
-    compute_cdx_etf_basis,
-    compute_cdx_vix_gap,
-    compute_spread_momentum,
-    aggregate_signals,
+    SignalRegistry,
     SignalConfig,
     AggregatorConfig,
+    compute_registered_signals,
+    aggregate_signals,
 )
 
 # Configure logging
@@ -38,72 +42,72 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def compute_signals(
-    cdx_df: pd.DataFrame,
-    vix_df: pd.DataFrame,
-    etf_df: pd.DataFrame,
-) -> tuple[pd.Series, pd.Series, pd.Series]:
-    """
-    Compute individual strategy signals.
+def main() -> None:
+    """Run the models layer demonstration."""
+    logger.info("=== Models Layer Demo (Registry Pattern) ===")
 
-    Parameters
-    ----------
-    cdx_df : pd.DataFrame
-        CDX spread data.
-    vix_df : pd.DataFrame
-        VIX volatility data.
-    etf_df : pd.DataFrame
-        ETF spread-equivalent data.
+    # Load signal registry from catalog (path relative to project root)
+    catalog_path = Path(__file__).parent.parent / "src/macrocredit/models/signal_catalog.json"
+    registry = SignalRegistry(catalog_path)
+    
+    logger.info("\n=== Signal Catalog ===")
+    enabled_signals = registry.get_enabled()
+    for name, metadata in enabled_signals.items():
+        logger.info(
+            "Signal: %s (weight=%.2f)\n  %s",
+            name,
+            metadata.default_weight,
+            metadata.description,
+        )
 
-    Returns
-    -------
-    tuple[pd.Series, pd.Series, pd.Series]
-        Basis, gap, and momentum signals.
-    """
-    logger.info("Computing individual signals")
+    # Generate synthetic data
+    logger.info("\n=== Generating Market Data ===")
+    cdx_df, vix_df, etf_df = generate_example_data(periods=252)
+    
+    market_data = {
+        "cdx": cdx_df,
+        "vix": vix_df,
+        "etf": etf_df,
+    }
 
-    config = SignalConfig(lookback=20, min_periods=10)
+    # Compute all registered signals
+    logger.info("\n=== Computing Signals ===")
+    signal_config = SignalConfig(lookback=20, min_periods=10)
+    signals = compute_registered_signals(registry, market_data, signal_config)
+    
+    # Display signal statistics
+    logger.info("\n=== Individual Signal Statistics ===")
+    for name, signal in signals.items():
+        valid = signal.dropna()
+        logger.info(
+            "%s: valid=%d, mean=%.3f, std=%.3f, range=[%.3f, %.3f]",
+            name,
+            len(valid),
+            valid.mean(),
+            valid.std(),
+            valid.min(),
+            valid.max(),
+        )
 
-    basis = compute_cdx_etf_basis(cdx_df, etf_df, config)
-    gap = compute_cdx_vix_gap(cdx_df, vix_df, config)
-    momentum = compute_spread_momentum(cdx_df, config)
+    # Build weights from catalog defaults
+    weights = {name: meta.default_weight for name, meta in enabled_signals.items()}
+    
+    # Create aggregator config
+    agg_config = AggregatorConfig(signal_weights=weights)
+    
+    logger.info("\n=== Aggregating Signals ===")
+    logger.info("Weights: %s", weights)
+    
+    # Aggregate signals
+    composite = aggregate_signals(signals, weights)
 
-    logger.info(
-        "Signal statistics: basis_valid=%d, gap_valid=%d, mom_valid=%d",
-        basis.notna().sum(),
-        gap.notna().sum(),
-        momentum.notna().sum(),
-    )
-
-    return basis, gap, momentum
-
-
-def generate_positions(
-    composite: pd.Series,
-    threshold: float = 1.0,
-) -> pd.DataFrame:
-    """
-    Convert composite signal to position recommendations.
-
-    Parameters
-    ----------
-    composite : pd.Series
-        Composite positioning score.
-    threshold : float
-        Z-score threshold for position triggers.
-
-    Returns
-    -------
-    pd.DataFrame
-        Position recommendations with signal levels.
-    """
-    logger.info("Generating position recommendations with threshold=%.2f", threshold)
+    # Generate positions
+    threshold = 1.5
+    logger.info("\n=== Generating Positions (threshold=%.2f) ===", threshold)
 
     def classify_position(score: float) -> str:
         if pd.isna(score):
             return "no_signal"
-        # Signal convention: positive = long credit risk (buy CDX)
-        #                    negative = short credit risk (sell CDX)
         if score > threshold:
             return "long_credit"
         if score < -threshold:
@@ -111,7 +115,7 @@ def generate_positions(
         return "neutral"
 
     positions = composite.apply(classify_position)
-
+    
     result = pd.DataFrame(
         {
             "signal_score": composite,
@@ -123,38 +127,12 @@ def generate_positions(
     pos_counts = result["position"].value_counts()
     logger.info("Position distribution:\n%s", pos_counts)
 
-    return result
-
-
-def main() -> None:
-    """Run the models layer demonstration."""
-    logger.info("=== Models Layer Demo ===")
-
-    # Generate synthetic data
-    cdx_df, vix_df, etf_df = generate_example_data(periods=252)
-
-    # Compute individual signals
-    basis, gap, momentum = compute_signals(cdx_df, vix_df, etf_df)
-
-    # Aggregate signals
-    agg_config = AggregatorConfig(
-        cdx_etf_basis_weight=0.35,
-        cdx_vix_gap_weight=0.35,
-        spread_momentum_weight=0.30,
-        threshold=1.5,
-    )
-
-    composite = aggregate_signals(basis, gap, momentum, agg_config)
-
-    # Generate positions
-    positions = generate_positions(composite, threshold=agg_config.threshold)
-
     # Display sample results
     logger.info("\n=== Sample Results (Last 10 Days) ===")
-    print(positions.tail(10).to_string())
+    print(result.tail(10).to_string())
 
     # Summary statistics
-    valid_signals = composite.dropna()
+    valid_composite = composite.dropna()
     logger.info(
         "\n=== Composite Signal Summary ===\n"
         "Valid observations: %d\n"
@@ -162,14 +140,32 @@ def main() -> None:
         "Std: %.3f\n"
         "Min: %.3f\n"
         "Max: %.3f",
-        len(valid_signals),
-        valid_signals.mean(),
-        valid_signals.std(),
-        valid_signals.min(),
-        valid_signals.max(),
+        len(valid_composite),
+        valid_composite.mean(),
+        valid_composite.std(),
+        valid_composite.min(),
+        valid_composite.max(),
     )
 
-    logger.info("=== Demo Complete ===")
+    # Demonstrate custom weight experiment
+    logger.info("\n=== Custom Weight Experiment ===")
+    custom_weights = {
+        "cdx_etf_basis": 0.50,
+        "cdx_vix_gap": 0.30,
+        "spread_momentum": 0.20,
+    }
+    logger.info("Testing custom weights: %s", custom_weights)
+    
+    custom_composite = aggregate_signals(signals, custom_weights)
+    custom_valid = custom_composite.dropna()
+    
+    logger.info(
+        "Custom composite: mean=%.3f, std=%.3f",
+        custom_valid.mean(),
+        custom_valid.std(),
+    )
+
+    logger.info("\n=== Demo Complete ===")
 
 
 if __name__ == "__main__":

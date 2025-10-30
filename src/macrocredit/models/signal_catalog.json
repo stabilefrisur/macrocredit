@@ -1,0 +1,37 @@
+[
+  {
+    "name": "cdx_etf_basis",
+    "description": "Flow-driven mispricing signal from CDX-ETF basis divergence",
+    "compute_function_name": "compute_cdx_etf_basis",
+    "data_requirements": {
+      "cdx": "spread",
+      "etf": "close"
+    },
+    "arg_mapping": ["cdx", "etf"],
+    "default_weight": 0.35,
+    "enabled": true
+  },
+  {
+    "name": "cdx_vix_gap",
+    "description": "Cross-asset risk sentiment divergence between credit and equity volatility",
+    "compute_function_name": "compute_cdx_vix_gap",
+    "data_requirements": {
+      "cdx": "spread",
+      "vix": "close"
+    },
+    "arg_mapping": ["cdx", "vix"],
+    "default_weight": 0.35,
+    "enabled": true
+  },
+  {
+    "name": "spread_momentum",
+    "description": "Short-term volatility-adjusted momentum in CDX spreads",
+    "compute_function_name": "compute_spread_momentum",
+    "data_requirements": {
+      "cdx": "spread"
+    },
+    "arg_mapping": ["cdx"],
+    "default_weight": 0.30,
+    "enabled": true
+  }
+]

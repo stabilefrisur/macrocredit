@@ -1,20 +1,15 @@
-"""
-Signal aggregation logic for combining multiple signals into composite positioning score.
+"""Signal aggregation logic for combining multiple signals into composite positioning score.
 """
 
 import logging
 import pandas as pd
 
-from .config import AggregatorConfig
-
 logger = logging.getLogger(__name__)
 
 
 def aggregate_signals(
-    cdx_etf_basis: pd.Series,
-    cdx_vix_gap: pd.Series,
-    spread_momentum: pd.Series,
-    config: AggregatorConfig | None = None,
+    signals: dict[str, pd.Series],
+    weights: dict[str, float],
 ) -> pd.Series:
     """
     Combine individual signals into weighted composite positioning score.
@@ -22,23 +17,25 @@ def aggregate_signals(
     The composite score represents net directional bias:
     - Positive values suggest long credit risk (buy CDX, sell protection)
     - Negative values suggest short credit risk (sell CDX, buy protection)
-    - Values below threshold suggest neutral positioning
 
     Parameters
     ----------
-    cdx_etf_basis : pd.Series
-        CDX-ETF basis signal (z-score normalized).
-    cdx_vix_gap : pd.Series
-        CDX-VIX gap signal (z-score normalized).
-    spread_momentum : pd.Series
-        Spread momentum signal (z-score normalized).
-    config : AggregatorConfig | None
-        Aggregation weights and threshold. Uses defaults if None.
+    signals : dict[str, pd.Series]
+        Mapping from signal names to z-score normalized signal series.
+        Example: {"cdx_etf_basis": basis_series, "cdx_vix_gap": gap_series}
+    weights : dict[str, float]
+        Mapping from signal names to weights (must sum to 1.0).
+        All keys must exist in signals dict.
 
     Returns
     -------
     pd.Series
         Composite positioning score aligned to common index.
+
+    Raises
+    ------
+    KeyError
+        If any weight key does not have a corresponding signal.
 
     Notes
     -----
@@ -50,37 +47,31 @@ def aggregate_signals(
 
     Examples
     --------
-    >>> config = AggregatorConfig(cdx_etf_basis_weight=0.4, cdx_vix_gap_weight=0.4,
-    ...                          spread_momentum_weight=0.2, threshold=1.5)
-    >>> composite = aggregate_signals(basis, gap, mom, config)
-    >>> positions = composite.apply(lambda x: 'long_credit' if x > 1.5 else
-    ...                             'short_credit' if x < -1.5 else 'neutral')
+    >>> signals = {"basis": basis_series, "momentum": mom_series}
+    >>> weights = {"basis": 0.6, "momentum": 0.4}
+    >>> composite = aggregate_signals(signals, weights)
     """
-    if config is None:
-        config = AggregatorConfig()
+    # Validate all weights have corresponding signals
+    missing_signals = set(weights.keys()) - set(signals.keys())
+    if missing_signals:
+        raise KeyError(
+            f"Signals missing for weights: {sorted(missing_signals)}. "
+            f"Available signals: {sorted(signals.keys())}"
+        )
 
     logger.info(
-        "Aggregating signals: basis_weight=%.2f, vix_weight=%.2f, mom_weight=%.2f",
-        config.cdx_etf_basis_weight,
-        config.cdx_vix_gap_weight,
-        config.spread_momentum_weight,
+        "Aggregating %d signals: %s",
+        len(weights),
+        ", ".join(f"{name}={weight:.2f}" for name, weight in sorted(weights.items())),
     )
 
     # Align all signals to common index
-    aligned = pd.DataFrame(
-        {
-            "cdx_etf_basis": cdx_etf_basis,
-            "cdx_vix_gap": cdx_vix_gap,
-            "spread_momentum": spread_momentum,
-        }
-    )
+    aligned = pd.DataFrame(signals)
 
     # Compute weighted average
-    composite = (
-        aligned["cdx_etf_basis"] * config.cdx_etf_basis_weight
-        + aligned["cdx_vix_gap"] * config.cdx_vix_gap_weight
-        + aligned["spread_momentum"] * config.spread_momentum_weight
-    )
+    composite = pd.Series(0.0, index=aligned.index)
+    for signal_name, weight in weights.items():
+        composite += aligned[signal_name] * weight
 
     valid_count = composite.notna().sum()
     mean_score = composite.mean()

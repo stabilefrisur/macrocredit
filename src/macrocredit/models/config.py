@@ -40,25 +40,24 @@ class AggregatorConfig:
 
     Attributes
     ----------
-    cdx_etf_basis_weight : float
-        Weight for CDX-ETF basis signal (0.0 to 1.0).
-    cdx_vix_gap_weight : float
-        Weight for CDX-VIX gap signal (0.0 to 1.0).
-    spread_momentum_weight : float
-        Weight for spread momentum signal (0.0 to 1.0).
-    threshold : float
-        Absolute z-score threshold for triggering positions.
+    signal_weights : dict[str, float]
+        Mapping from signal names to weights (must sum to 1.0).
+        Example: {"cdx_etf_basis": 0.4, "cdx_vix_gap": 0.4, "spread_momentum": 0.2}
     """
 
-    cdx_etf_basis_weight: float = 0.35
-    cdx_vix_gap_weight: float = 0.35
-    spread_momentum_weight: float = 0.30
-    threshold: float = 1.0
+    signal_weights: dict[str, float]
 
     def __post_init__(self) -> None:
-        """Validate weights sum approximately to 1.0."""
-        total = self.cdx_etf_basis_weight + self.cdx_vix_gap_weight + self.spread_momentum_weight
-        if not (0.99 <= total <= 1.01):
-            raise ValueError(f"Weights must sum to 1.0, got {total:.3f}")
-        if self.threshold <= 0:
-            raise ValueError("Threshold must be positive")
+        """Validate signal weights configuration."""
+        if not self.signal_weights:
+            raise ValueError("signal_weights cannot be empty")
+        
+        if any(w < 0 for w in self.signal_weights.values()):
+            raise ValueError("All weights must be non-negative")
+        
+        total = sum(self.signal_weights.values())
+        if not (0.999 <= total <= 1.001):
+            raise ValueError(
+                f"Signal weights must sum to 1.0, got {total:.6f}. "
+                f"Weights: {self.signal_weights}"
+            )

@@ -11,6 +11,8 @@ from .signals import (
 )
 from .aggregator import aggregate_signals
 from .config import SignalConfig, AggregatorConfig
+from .registry import SignalRegistry, SignalMetadata
+from .catalog import compute_registered_signals
 
 __all__ = [
     "compute_cdx_etf_basis",
@@ -19,4 +21,7 @@ __all__ = [
     "aggregate_signals",
     "SignalConfig",
     "AggregatorConfig",
+    "SignalRegistry",
+    "SignalMetadata",
+    "compute_registered_signals",
 ]
