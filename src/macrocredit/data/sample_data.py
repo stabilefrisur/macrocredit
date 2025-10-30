@@ -118,13 +118,12 @@ def generate_vix_sample(
     Returns
     -------
     pd.DataFrame
-        VIX data with columns: date, close, open, high, low
+        VIX data with columns: date, close
 
     Notes
     -----
     - Uses mean-reverting process with occasional spikes
     - VIX constrained to positive values
-    - Includes realistic OHLC data
     """
     logger.info("Generating VIX sample: periods=%d", periods)
 
@@ -148,18 +147,10 @@ def generate_vix_sample(
         new_vix = max(8.0, vix_close[-1] + drift + shock + spike)
         vix_close.append(new_vix)
 
-    # Generate OHLC from close
-    vix_open = [vix_close[0]] + vix_close[:-1]
-    vix_high = [c + abs(rng.normal(0, 0.5)) for c in vix_close]
-    vix_low = [c - abs(rng.normal(0, 0.5)) for c in vix_close]
-
     df = pd.DataFrame(
         {
             "date": dates,
             "close": vix_close,
-            "open": vix_open,
-            "high": vix_high,
-            "low": vix_low,
         }
     )
 
@@ -196,12 +187,11 @@ def generate_etf_sample(
     Returns
     -------
     pd.DataFrame
-        ETF data with columns: date, close, ticker, volume, open, high, low
+        ETF data with columns: date, close, ticker
 
     Notes
     -----
     - Uses geometric Brownian motion
-    - Includes realistic volume patterns
     - Prices constrained to positive values
     """
     logger.info("Generating ETF sample: ticker=%s, periods=%d", ticker, periods)
@@ -213,27 +203,11 @@ def generate_etf_sample(
     returns = rng.normal(0.0001, volatility / base_price, periods)
     price = base_price * np.exp(np.cumsum(returns))
 
-    # Generate OHLC from close
-    close = price
-    open_price = np.roll(close, 1)
-    open_price[0] = close[0]
-    high = close * (1 + abs(rng.normal(0, 0.005, periods)))
-    low = close * (1 - abs(rng.normal(0, 0.005, periods)))
-
-    # Volume with day-of-week patterns
-    base_volume = 5_000_000
-    volume = base_volume * (1 + rng.normal(0, 0.3, periods))
-    volume = np.maximum(100_000, volume)
-
     df = pd.DataFrame(
         {
             "date": dates,
-            "close": close,
+            "close": price,
             "ticker": [ticker] * periods,
-            "volume": volume.astype(int),
-            "open": open_price,
-            "high": high,
-            "low": low,
         }
     )
 

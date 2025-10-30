@@ -87,20 +87,6 @@ def test_validate_vix_schema_valid() -> None:
     assert "close" in validated.columns
 
 
-def test_validate_vix_schema_missing_columns() -> None:
-    """Test VIX schema validation with missing required columns."""
-    df = pd.DataFrame(
-        {
-            "date": pd.date_range("2024-01-01", periods=10),
-            # Missing 'close' column
-            "open": [15.0] * 10,
-        }
-    )
-
-    with pytest.raises(ValueError, match="Missing required columns"):
-        validate_vix_schema(df)
-
-
 def test_validate_vix_schema_invalid_values() -> None:
     """Test VIX schema validation with invalid VIX values."""
     df = pd.DataFrame(

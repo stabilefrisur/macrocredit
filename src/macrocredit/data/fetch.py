@@ -203,7 +203,6 @@ def fetch_vix(
     pd.DataFrame
         Validated VIX data with DatetimeIndex and columns:
         - close: VIX closing level
-        - open, high, low: Optional OHLC data
 
     Examples
     --------
@@ -305,7 +304,6 @@ def fetch_etf(
         Validated ETF data with DatetimeIndex and columns:
         - close: Closing price
         - ticker: ETF ticker symbol (if present)
-        - volume: Trading volume (if present)
 
     Examples
     --------

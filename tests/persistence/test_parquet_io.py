@@ -20,7 +20,6 @@ def sample_timeseries():
     return pd.DataFrame(
         {
             "spread": np.random.uniform(90, 110, 10),
-            "volume": np.random.randint(1000, 5000, 10),
         },
         index=dates,
     )

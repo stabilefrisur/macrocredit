@@ -16,32 +16,21 @@ logger = logging.getLogger(__name__)
 
 # Bloomberg field mappings for different instrument types
 BLOOMBERG_FIELDS = {
-    "cdx": ["PX_LAST", "BID", "ASK", "PX_VOLUME"],  # CDX spread and volume
-    "vix": ["PX_LAST", "PX_OPEN", "PX_HIGH", "PX_LOW", "PX_VOLUME"],  # VIX OHLCV
-    "etf": ["PX_LAST", "PX_OPEN", "PX_HIGH", "PX_LOW", "PX_VOLUME"],  # ETF OHLCV
+    "cdx": ["PX_LAST"],  # CDX spread only
+    "vix": ["PX_LAST"],  # VIX close only
+    "etf": ["PX_LAST"],  # ETF close only
 }
 
 # Mapping from Bloomberg field names to schema column names
 FIELD_MAPPING = {
     "cdx": {
         "PX_LAST": "spread",
-        "BID": "bid",
-        "ASK": "ask",
-        "PX_VOLUME": "volume",
     },
     "vix": {
         "PX_LAST": "close",
-        "PX_OPEN": "open",
-        "PX_HIGH": "high",
-        "PX_LOW": "low",
-        "PX_VOLUME": "volume",
     },
     "etf": {
         "PX_LAST": "close",
-        "PX_OPEN": "open",
-        "PX_HIGH": "high",
-        "PX_LOW": "low",
-        "PX_VOLUME": "volume",
     },
 }
 
@@ -89,9 +78,9 @@ def fetch_from_bloomberg(
     automatically by xbbg wrapper.
 
     Returned DataFrame columns are mapped to project schemas:
-    - CDX: spread, bid, ask, volume, index, tenor
-    - VIX: close, open, high, low, volume
-    - ETF: close, open, high, low, volume, ticker
+    - CDX: spread, index, tenor
+    - VIX: close
+    - ETF: close, ticker
 
     Example tickers:
     - CDX: 'CDX.NA.IG.5Y Index'

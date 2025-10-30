@@ -120,7 +120,7 @@ def generate_persistence_data(
     """
     Generate dataset for persistence layer demonstrations.
 
-    Extends the standard dataset with additional instruments and volume data
+    Extends the standard dataset with additional instruments
     for demonstrating data registry and I/O operations.
 
     Parameters
@@ -136,11 +136,11 @@ def generate_persistence_data(
     -------
     dict[str, pd.DataFrame]
         Dictionary with keys: 'cdx_ig_5y', 'cdx_hy_5y', 'vix', 'hyg_etf'.
-        Each DataFrame has date index and appropriate columns including volume.
+        Each DataFrame has date index and appropriate columns.
 
     Notes
     -----
-    - Adds CDX HY and volume data to the standard dataset
+    - Adds CDX HY to the standard dataset
     - Suitable for multi-instrument persistence examples
     """
     logger.info(
@@ -153,11 +153,6 @@ def generate_persistence_data(
     # Generate standard instruments
     cdx_ig, vix, hyg = generate_example_data(start_date, periods, seed)
 
-    # Add volume to standard instruments
-    cdx_ig["volume"] = (cdx_ig["spread"] * 50).astype(int)
-    vix["volume"] = 100000
-    # hyg already has volume from generate_etf_sample
-
     # Generate additional CDX HY for multi-instrument demos
     cdx_hy = generate_cdx_sample(
         start_date=start_date,
@@ -168,13 +163,12 @@ def generate_persistence_data(
         volatility=20.0,
         seed=seed + 1,
     ).set_index("date")
-    cdx_hy["volume"] = (cdx_hy["spread"] * 10).astype(int)
 
     logger.info("Generated persistence data with %d instruments", 4)
 
     return {
-        "cdx_ig_5y": cdx_ig[["spread", "volume"]],
-        "cdx_hy_5y": cdx_hy[["spread", "volume"]],
-        "vix": vix[["close", "volume"]],
-        "hyg_etf": hyg[["close", "volume"]],
+        "cdx_ig_5y": cdx_ig[["spread"]],
+        "cdx_hy_5y": cdx_hy[["spread"]],
+        "vix": vix[["close"]],
+        "hyg_etf": hyg[["close"]],
     }
