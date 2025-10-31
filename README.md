@@ -72,10 +72,20 @@ macrocredit/
 
 ## Documentation
 
-- **[CDX Overlay Strategy](docs/cdx_overlay_strategy.md)** - Investment thesis and pilot implementation
+### Getting Started
 - **[Python Guidelines](docs/python_guidelines.md)** - Code standards and best practices
-- **[Logging Design](docs/logging_design.md)** - Logging conventions and metadata tracking
 - **[Examples](examples/)** - Runnable demos for each layer
+
+### Strategy & Architecture
+- **[CDX Overlay Strategy](docs/cdx_overlay_strategy.md)** - Investment thesis and pilot implementation
+- **[Documentation Structure](docs/documentation_structure.md)** - Single source of truth principles
+
+### Design Guides
+- **[Logging Design](docs/logging_design.md)** - Logging conventions and metadata tracking
+- **[Signal Registry Usage](docs/signal_registry_usage.md)** - Signal management and research workflow
+- **[Visualization Design](docs/visualization_design.md)** - Chart architecture and integration patterns
+- **[Caching Design](docs/caching_design.md)** - Cache layer architecture and usage
+- **[Adding Data Providers](docs/adding_data_providers.md)** - Provider extension guide
 
 ## Features
 
@@ -85,6 +95,11 @@ macrocredit/
 ✅ **Interactive visualization** with Plotly charts (equity, signals, drawdown)  
 ✅ **Parquet-based persistence** with JSON metadata registry  
 ✅ **Comprehensive logging** with run metadata tracking
+
+**Planned Features:**
+- 🔜 Bloomberg data integration (stub implementation in place)
+- 🔜 Streamlit dashboard (placeholder UI ready)
+- 🔜 Advanced attribution charts (API design complete)
 
 ## Development
 
@@ -170,4 +185,4 @@ This is a research project under active development. See [Python Guidelines](doc
 ---
 
 **Maintained by stabilefrisur**  
-Version 0.1.0 | Last Updated: October 27, 2025
+Version 0.1.0 | Last Updated: October 31, 2025

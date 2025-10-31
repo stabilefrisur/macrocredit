@@ -292,6 +292,155 @@ def test_my_new_signal():
 8. **Use explicit arg_mapping** to avoid parameter order confusion
 9. **Compare signals on same backtest config** for fair performance comparison
 
+## Debugging Signals
+
+### Common Issues
+
+**Signal returns all NaN values**
+```python
+# Check data alignment
+print(f"CDX rows: {len(cdx_df)}, ETF rows: {len(etf_df)}")
+print(f"CDX index: {cdx_df.index.min()} to {cdx_df.index.max()}")
+print(f"ETF index: {etf_df.index.min()} to {etf_df.index.max()}")
+
+# Solution: Ensure date indices overlap
+aligned_start = max(cdx_df.index.min(), etf_df.index.min())
+aligned_end = min(cdx_df.index.max(), etf_df.index.max())
+```
+
+**Signal not appearing in compute_registered_signals output**
+```python
+# Check if signal is enabled in catalog
+registry = SignalRegistry("src/macrocredit/models/signal_catalog.json")
+catalog = registry.get_catalog()
+enabled_signals = [s for s in catalog if s["enabled"]]
+print(f"Enabled signals: {[s['name'] for s in enabled_signals]}")
+
+# Check if function exists
+from macrocredit.models import signals as sig_module
+print(f"Has function: {hasattr(sig_module, 'compute_my_signal')}")
+```
+
+**Data requirements not met**
+```python
+# Registry validates data requirements before computing
+# Check error message for missing columns:
+# ValueError: Missing required column 'spread' in data['cdx']
+
+# Solution: Ensure data dict has all required DataFrames
+market_data = {
+    "cdx": cdx_df,  # Must have columns specified in data_requirements
+    "vix": vix_df,
+    "etf": etf_df,
+}
+```
+
+### Debugging Tips
+
+**Enable debug logging:**
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Now signal computations will log details:
+# DEBUG - Computing CDX-ETF basis: cdx_rows=252, etf_rows=252
+# DEBUG - Generated 242 valid signals (10 NaN due to rolling window)
+```
+
+**Inspect intermediate values:**
+```python
+# Modify signal function temporarily to log intermediate steps
+def compute_my_signal(cdx_df, etf_df, config=None):
+    logger.info("Computing signal...")
+    
+    raw_diff = cdx_df['spread'] - etf_df['close']
+    logger.debug("Raw diff range: %.2f to %.2f", raw_diff.min(), raw_diff.max())
+    
+    zscore = (raw_diff - raw_diff.rolling(20).mean()) / raw_diff.rolling(20).std()
+    logger.debug("Z-score range: %.2f to %.2f", zscore.min(), zscore.max())
+    
+    return zscore
+```
+
+**Test with synthetic data:**
+```python
+# Create simple test case
+import pandas as pd
+import numpy as np
+
+dates = pd.date_range('2024-01-01', periods=100)
+cdx_df = pd.DataFrame({'spread': np.arange(100)}, index=dates)
+etf_df = pd.DataFrame({'close': np.arange(100) * 0.5}, index=dates)
+
+# Signal should produce predictable pattern
+signal = compute_my_signal(cdx_df, etf_df)
+print(signal.describe())
+```
+
+## Versioning Signals
+
+### When to Version
+
+Create a new signal version when:
+- Changing calculation methodology significantly
+- Modifying normalization approach
+- Updating data requirements
+
+**Don't version for:**
+- Minor bug fixes (fix in place)
+- Performance optimizations (same output)
+- Code refactoring (same logic)
+
+### Versioning Strategy
+
+**Option 1: Suffix versioning (recommended)**
+```json
+{
+  "name": "cdx_etf_basis_v2",
+  "description": "CDX-ETF basis with improved normalization (v2)",
+  "compute_function_name": "compute_cdx_etf_basis_v2",
+  ...
+}
+```
+
+**Option 2: Deprecation pattern**
+```json
+{
+  "name": "cdx_etf_basis_old",
+  "description": "DEPRECATED: Use cdx_etf_basis_v2",
+  "enabled": false,
+  ...
+},
+{
+  "name": "cdx_etf_basis_v2",
+  "description": "CDX-ETF basis with improved normalization",
+  "enabled": true,
+  ...
+}
+```
+
+### Backtest Comparison Across Versions
+
+```python
+# Load historical catalog with old version
+old_registry = SignalRegistry("archive/signal_catalog_2024_q3.json")
+old_signals = compute_registered_signals(old_registry, market_data, config)
+
+# Compare with current version
+new_registry = SignalRegistry("src/macrocredit/models/signal_catalog.json")
+new_signals = compute_registered_signals(new_registry, market_data, config)
+
+# Backtest both for performance comparison
+for signal_name in ["cdx_etf_basis", "cdx_etf_basis_v2"]:
+    if signal_name in old_signals:
+        result_old = run_backtest(old_signals[signal_name], cdx_df["spread"], config)
+        print(f"{signal_name} (old): Sharpe={result_old.metrics['sharpe_ratio']:.2f}")
+    
+    if signal_name in new_signals:
+        result_new = run_backtest(new_signals[signal_name], cdx_df["spread"], config)
+        print(f"{signal_name} (new): Sharpe={result_new.metrics['sharpe_ratio']:.2f}")
+```
+
 ## Direct Signal Computation
 
 You can also call compute functions directly without the registry:

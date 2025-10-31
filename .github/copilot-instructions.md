@@ -35,8 +35,9 @@ tests/                # Unit tests for reproducibility
   visualization/
   persistence/
 
-.docs/                # Documentation and strategy specs
+docs/                 # Documentation and strategy specs
   cdx_overlay_strategy.md # Investment strategy context
+  maintenance/        # Fork/upstream sync workflows (advanced)
 .github/              # GitHub workflows and agent instructions
 pyproject.toml        # Project dependencies and build system
 README.md             # Project overview and setup instructions
@@ -408,4 +409,4 @@ It should:
 
 > Maintained by **stabilefrisur**.  
 > Version 1.1 — Optimized for VS Code Agent Mode (Claude Sonnet 4.5 / GPT‑5)  
-> Last Updated: October 26, 2025
+> Last Updated: October 31, 2025

@@ -239,23 +239,47 @@ Current implementation uses Express; future complexity may require Graph Objects
 
 ### Planned Additions
 
-**Signal Attribution (`plot_attribution`)**
+**Implementation Status:** These features are designed but not yet implemented. Function stubs exist in `plots.py` but raise `NotImplementedError`.
+
+**Signal Attribution (`plot_attribution`)** — 🔜 Planned
 - **Input:** `pd.DataFrame` with columns per signal's P&L contribution
 - **Output:** Stacked area chart showing decomposition over time
 - **Design question:** Absolute P&L or percentage contribution?
 - **Blocker:** Requires backtest engine to track per-signal attribution
+- **Current status:** Stub raises `NotImplementedError`
 
-**Position Exposures (`plot_exposures`)**
+**Position Exposures (`plot_exposures`)** — 🔜 Planned
 - **Input:** `pd.DataFrame` with notional, delta, DV01 columns
 - **Output:** Multi-line chart with dual y-axes (notional vs Greeks)
 - **Design question:** Single chart or separate panels?
 - **Blocker:** Requires position tracking beyond simple long/short
+- **Current status:** Stub raises `NotImplementedError`
 
-**Multi-Panel Dashboard (`plot_dashboard`)**
+**Multi-Panel Dashboard (`plot_dashboard`)** — 🔜 Planned
 - **Input:** Complete backtest results dictionary
 - **Output:** Plotly subplots (2×2 grid: equity, drawdown, signals, metrics)
 - **Design question:** Fixed layout or configurable panels?
 - **Implementation:** Use `plotly.subplots.make_subplots()`
+- **Current status:** Stub raises `NotImplementedError`
+
+### Streamlit Integration
+
+**Status:** Placeholder implementation in `app.py`
+
+The Streamlit dashboard (`visualization/app.py`) currently contains only a stub:
+
+```python
+import streamlit as st
+
+st.write("Placeholder for Streamlit dashboard")
+```
+
+**Planned features:**
+- Interactive parameter controls for backtests
+- Multi-strategy comparison views
+- Real-time signal monitoring (future consideration)
+
+**Timeline:** Will be implemented after core plotting functions are complete.
 
 ### Extensibility Mechanisms
 
@@ -348,5 +372,5 @@ fig.add_vrect(x0="2024-01-01", x1="2024-03-01", fillcolor="red", opacity=0.1)
 
 ---
 
-**Last Updated:** October 28, 2025  
+**Last Updated:** October 31, 2025  
 **Maintainer:** stabilefrisur
