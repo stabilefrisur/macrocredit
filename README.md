@@ -98,8 +98,8 @@ macrocredit/
 
 **Planned Features:**
 - 🔜 Bloomberg data integration (stub implementation in place)
-- 🔜 Streamlit dashboard (placeholder UI ready)
-- 🔜 Advanced attribution charts (API design complete)
+- 🔜 Streamlit dashboard (stub exists, not yet implemented)
+- 🔜 Advanced attribution charts (stubs with NotImplementedError)
 
 ## Development
 

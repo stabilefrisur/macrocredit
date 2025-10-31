@@ -238,6 +238,10 @@ def plot_attribution(
     go.Figure
         Plotly figure object with stacked area chart.
 
+    Implementation Status
+    ---------------------
+    Not implemented — raises NotImplementedError.
+
     Notes
     -----
     Placeholder for future implementation.
@@ -265,6 +269,10 @@ def plot_exposures(
     go.Figure
         Plotly figure object with multi-line chart.
 
+    Implementation Status
+    ---------------------
+    Not implemented — raises NotImplementedError.
+
     Notes
     -----
     Placeholder for future implementation.
@@ -288,6 +296,10 @@ def plot_dashboard(
     -------
     go.Figure
         Plotly figure with subplots (equity, drawdown, signals, exposures).
+
+    Implementation Status
+    ---------------------
+    Not implemented — raises NotImplementedError.
 
     Notes
     -----
