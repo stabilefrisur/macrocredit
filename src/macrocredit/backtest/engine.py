@@ -1,7 +1,7 @@
 """
 Core backtesting engine for signal-to-position simulation.
 
-This module converts composite signals into positions and simulates P&L.
+This module converts signals into positions and simulates P&L.
 Design is intentionally simple to allow easy replacement with external
 libraries while maintaining our domain-specific logic.
 """
@@ -27,7 +27,7 @@ class BacktestResult:
     ----------
     positions : pd.DataFrame
         Daily position history with columns:
-        - signal: composite signal value
+        - signal: signal value
         - position: current position (+1, 0, -1)
         - days_held: days in current position
         - spread: CDX spread level (for P&L calc)
@@ -62,7 +62,7 @@ def run_backtest(
     Parameters
     ----------
     composite_signal : pd.Series
-        Daily composite positioning scores from signal aggregation.
+        Daily positioning scores from signal computation.
         DatetimeIndex with float values.
     spread : pd.Series
         CDX spread levels aligned to signal dates.

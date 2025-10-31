@@ -45,7 +45,7 @@ class BacktestEngine(Protocol):
         Parameters
         ----------
         composite_signal : pd.Series
-            Daily composite positioning scores.
+            Daily positioning scores from signal computation.
         spread : pd.Series
             CDX spread levels aligned to signal dates.
         config : BacktestConfig | None

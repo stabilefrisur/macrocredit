@@ -18,7 +18,7 @@ uv run python examples/data_demo.py          # Data loading and transformation
 | Script | Purpose | Key Features |
 |--------|---------|--------------|
 | `backtest_demo.py` | End-to-end backtest workflow | Metrics, trade history, transaction costs |
-| `models_demo.py` | Signal generation and aggregation | Individual signals, composite scoring, positions |
+| `models_demo.py` | Signal generation workflow | Signal computation, statistics, positions |
 | `visualization_demo.py` | Interactive plotting and dashboards | Equity curves, signals, drawdown charts |
 | `persistence_demo.py` | Data I/O and registry management | Parquet files, metadata, registry queries |
 | `data_demo.py` | Data loading and transformation | Schema validation, alignment, z-scores |

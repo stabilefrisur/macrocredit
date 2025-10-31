@@ -83,14 +83,14 @@ Typical holding period is **days to a few weeks**, with moderate turnover aligne
 **Signal Standardization:**  
 - Convert each signal into a **z-score or percentile rank** to allow comparability.  
 
-**Aggregation:**  
-- Combine the three signals using **weighted average**, with optional decay to account for signal half-life.  
-- Target a **single tactical positioning score** dictating net CDX exposure.  
+**Signal Evaluation:**  
+- Each signal is evaluated independently to establish clear performance attribution.  
+- Signals can be combined in future experiments once individual performance is understood.  
 
 **Trade Expression:**  
-- **Positive composite score:** Long credit risk → Buy CDX (sell protection)
-- **Negative composite score:** Short credit risk → Sell CDX (buy protection)
-- **Neutral/reduced exposure:** When signals are weak or contradictory.  
+- **Positive signal:** Long credit risk → Buy CDX (sell protection)
+- **Negative signal:** Short credit risk → Sell CDX (buy protection)
+- **Neutral/reduced exposure:** When signal is weak or below threshold.  
 
 **Update Frequency:**  
 - Signals refreshed **daily**, with expected half-life of **3–7 days** depending on market regime.

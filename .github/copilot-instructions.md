@@ -161,10 +161,10 @@ When generating code, the assistant should **infer module context from file path
 - **Positive signal values** → Long credit risk → Buy CDX (sell protection)
 - **Negative signal values** → Short credit risk → Sell CDX (buy protection)
 
-This convention ensures that:
-1. Signals can be aggregated without confusion about directionality
-2. Positive composite scores clearly indicate bullish credit positioning
-3. Risk limits and thresholds apply consistently across all signals
+This convention ensures clear interpretation when:
+1. Evaluating signals independently through backtests
+2. Comparing performance across different signal ideas
+3. Combining signals in future experiments (if needed)
 
 **Signal naming convention:**
 
@@ -172,14 +172,7 @@ Use consistent signal names throughout the models layer:
 - **Signal names:** `cdx_etf_basis`, `cdx_vix_gap`, `spread_momentum`
 - **Function names:** `compute_cdx_etf_basis`, `compute_cdx_vix_gap`, `compute_spread_momentum`
 - **Function parameters:** `cdx_etf_basis`, `cdx_vix_gap`, `spread_momentum`
-- **Weight dict keys:** `"cdx_etf_basis"`, `"cdx_vix_gap"`, `"spread_momentum"`
 - **DataFrame columns:** `cdx_etf_basis`, `cdx_vix_gap`, `spread_momentum`
-
-**Weight convention:**
-- By default, signals are aggregated with **equal weights** (1/N for N signals)
-- Custom weights can be specified as a dict mapping signal names to floats (must sum to 1.0)
-- Use `aggregate_signals(signals)` for equal-weight or `aggregate_signals(signals, weights)` for custom weights
-- Use `AggregatorConfig(signal_names=names)` for equal-weight or `AggregatorConfig(signal_weights=weights)` for custom
 
 **Implementation guidelines:**
 - When creating new signals, verify the sign matches this convention

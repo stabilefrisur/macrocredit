@@ -26,20 +26,21 @@ uv run python examples/backtest_demo.py
 ### Basic Usage
 
 ```python
-from macrocredit.data import fetch_cdx, fetch_vix, FileSource
-from macrocredit.models import compute_cdx_vix_gap, aggregate_signals
-from macrocredit.backtest import run_backtest
+from macrocredit.data import fetch_cdx, fetch_etf, FileSource
+from macrocredit.models import compute_cdx_etf_basis, SignalConfig
+from macrocredit.backtest import run_backtest, BacktestConfig
 
 # Load market data with validation
 cdx_df = fetch_cdx(FileSource("data/raw/cdx_data.parquet"), index_name="CDX_IG_5Y")
-vix_df = fetch_vix(FileSource("data/raw/vix_data.parquet"))
+etf_df = fetch_etf(FileSource("data/raw/etf_data.parquet"), ticker="HYG")
 
-# Generate signals
-vix_gap = compute_cdx_vix_gap(cdx_df, vix_df)
-composite = aggregate_signals([vix_gap, ...], weights=[0.5, ...])
+# Generate signal
+signal_config = SignalConfig(lookback=20, min_periods=10)
+signal = compute_cdx_etf_basis(cdx_df, etf_df, signal_config)
 
 # Run backtest
-results = run_backtest(composite, config=BacktestConfig())
+backtest_config = BacktestConfig(entry_threshold=1.5, exit_threshold=0.75)
+results = run_backtest(signal, cdx_df["spread"], backtest_config)
 print(f"Sharpe Ratio: {results.metrics['sharpe_ratio']:.2f}")
 ```
 
@@ -49,7 +50,7 @@ print(f"Sharpe Ratio: {results.metrics['sharpe_ratio']:.2f}")
 macrocredit/
 ├── src/macrocredit/       # Core framework
 │   ├── data/              # Data loading, validation, transformation
-│   ├── models/            # Signal generation and aggregation
+│   ├── models/            # Signal generation for credit strategies
 │   ├── backtest/          # Backtesting engine and metrics
 │   ├── visualization/     # Plotly charts and Streamlit dashboard
 │   ├── persistence/       # Parquet/JSON I/O and registry
@@ -64,7 +65,7 @@ macrocredit/
 | Layer | Purpose | Entry Point |
 |-------|---------|-------------|
 | **Data** | Load, validate, transform market data | `macrocredit.data` |
-| **Models** | Generate signals and aggregate strategies | `macrocredit.models` |
+| **Models** | Generate signals for independent evaluation | `macrocredit.models` |
 | **Backtest** | Simulate execution and compute metrics | `macrocredit.backtest` |
 | **Visualization** | Interactive charts and dashboards | `macrocredit.visualization` |
 | **Persistence** | Save/load data with metadata registry | `macrocredit.persistence` |
@@ -141,7 +142,8 @@ All model signals follow a **consistent sign convention**:
 - **Positive values** → Long credit risk (buy CDX / sell protection)
 - **Negative values** → Short credit risk (sell CDX / buy protection)
 
-This ensures signals can be aggregated without confusion about directionality.
+This convention ensures clear interpretation when evaluating signals individually
+or when combining signals in future experiments.
 
 ### Data Flow
 
@@ -150,7 +152,7 @@ Raw Data (Parquet/CSV)
     ↓
 Data Layer (load, validate, transform)
     ↓
-Models Layer (signals, aggregation)
+Models Layer (signal computation)
     ↓
 Backtest Layer (simulation, metrics)
     ↓
