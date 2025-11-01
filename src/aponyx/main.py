@@ -1,4 +1,5 @@
-def main():
+def main() -> None:
+    """Main entry point."""
     print("Hello from aponyx!")
 
 

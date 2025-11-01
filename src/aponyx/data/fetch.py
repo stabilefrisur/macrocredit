@@ -6,7 +6,6 @@ with automatic validation and optional caching.
 """
 
 import logging
-from typing import Any
 
 import pandas as pd
 

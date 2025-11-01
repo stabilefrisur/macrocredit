@@ -1,18 +1,39 @@
 [project]
 name = "aponyx"
-description = "Aponyx - Systematic Macro Credit Strategy Framework"
+description = "Systematic research framework for tactical credit strategies"
 version = "0.1.0"
 readme = "README.md"
+license = {file = "LICENSE"}
 authors = [
     { name = "Stabile Frisur", email = "26568863+stabilefrisur@users.noreply.github.com" }
 ]
 requires-python = ">=3.13"
+keywords = [
+    "finance",
+    "investing",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Typing :: Typed",
+]
 dependencies = [
     "pandas>=2.2.0",
     "numpy>=2.0.0",
     "pyarrow>=17.0.0",
     "xbbg>=0.7.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/stabilefrisur/aponyx"
+Repository = "https://github.com/stabilefrisur/aponyx"
+Documentation = "https://github.com/stabilefrisur/aponyx/blob/master/README.md"
+Issues = "https://github.com/stabilefrisur/aponyx/issues"
+Changelog = "https://github.com/stabilefrisur/aponyx/blob/master/CHANGELOG.md"
 
 [build-system]
 requires = ["uv_build>=0.9.5,<0.10.0"]
@@ -29,6 +50,7 @@ dev = [
     "ruff>=0.6.0",
     "black>=24.0.0",
     "mypy>=1.11.0",
+    "pandas-stubs>=2.0.0",
 ]
 viz = [
     "plotly>=5.24.0",

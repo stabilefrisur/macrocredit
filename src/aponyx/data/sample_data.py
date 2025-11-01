@@ -249,7 +249,6 @@ def generate_full_sample_dataset(
     - HYG and LQD ETF prices
     """
     from pathlib import Path
-    from ..persistence.parquet_io import save_parquet
 
     logger.info("Generating full sample dataset: output_dir=%s", output_dir)
 
