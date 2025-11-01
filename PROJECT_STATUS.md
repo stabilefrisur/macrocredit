@@ -1,6 +1,6 @@
 # Project Status — aponyx
 
-**Last Updated:** October 31, 2025  
+**Last Updated:** November 1, 2025  
 **Version:** 0.1.0  
 **Maintainer:** stabilefrisur
 
@@ -212,7 +212,7 @@ src/aponyx/
   - `tests/visualization/` - Plotting functions
 - Deterministic test data with fixed seeds
 - Pytest configuration with coverage tracking
-- All tests passing
+- Comprehensive test coverage
 
 **Testing Philosophy:**
 - Test API contracts (return types, shapes, edge cases)
@@ -622,9 +622,8 @@ LICENSE                    # MIT license
 
 1. Complete Streamlit dashboard implementation (`src/aponyx/visualization/app.py`)
 2. Implement signal attribution and exposure charts (`plot_attribution`, `plot_exposures`)
-3. Add Bloomberg Terminal data provider (`src/aponyx/data/providers/bloomberg.py`)
-4. Expand signal catalog with additional ideas
-5. Multi-signal combination experiments
+3. Expand signal catalog with additional ideas
+4. Multi-signal combination experiments
 
 ---
 
