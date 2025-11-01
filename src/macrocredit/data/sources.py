@@ -36,18 +36,15 @@ class FileSource:
 @dataclass(frozen=True)
 class BloombergSource:
     """
-    Bloomberg Terminal/API data source.
+    Bloomberg Terminal data source.
 
-    Attributes
-    ----------
-    host : str
-        Bloomberg API host address.
-    port : int
-        Bloomberg API port.
+    Notes
+    -----
+    Requires active Bloomberg Terminal session.
+    Connection is handled automatically by xbbg wrapper.
     """
 
-    host: str = "localhost"
-    port: int = 8194
+    pass
 
 
 @dataclass(frozen=True)

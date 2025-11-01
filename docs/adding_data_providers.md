@@ -13,7 +13,7 @@ The data layer uses a **provider pattern** to support multiple data sources (fil
 | Provider | Module | Status | Use Case |
 |----------|--------|--------|----------|
 | `FileSource` | `providers/file.py` | ✅ Implemented | Local Parquet/CSV files |
-| `BloombergSource` | `providers/bloomberg.py` | 🔜 Stub | Bloomberg Terminal data |
+| `BloombergSource` | `providers/bloomberg.py` | ✅ Implemented | Bloomberg Terminal data |
 | `APISource` | *(not yet created)* | ❌ Not implemented | REST API endpoints |
 
 ### Provider Interface

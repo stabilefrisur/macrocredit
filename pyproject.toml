@@ -11,6 +11,7 @@ dependencies = [
     "pandas>=2.2.0",
     "numpy>=2.0.0",
     "pyarrow>=17.0.0",
+    "xbbg>=0.7.0",
 ]
 
 [build-system]
@@ -34,9 +35,6 @@ viz = [
     "streamlit>=1.39.0",
     "nbformat>=5.10.0",
     "ipykernel>=6.29.0",
-]
-bloomberg = [
-    "xbbg>=0.7.0",
 ]
 
 [tool.pytest.ini_options]

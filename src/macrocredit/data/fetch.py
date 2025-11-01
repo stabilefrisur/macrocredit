@@ -134,8 +134,6 @@ def fetch_cdx(
             instrument=instrument,
             start_date=start_date,
             end_date=end_date,
-            host=source.host,
-            port=source.port,
         )
     else:
         raise ValueError(f"Unsupported source type: {type(source)}")
@@ -246,8 +244,6 @@ def fetch_vix(
             instrument=instrument,
             start_date=start_date,
             end_date=end_date,
-            host=source.host,
-            port=source.port,
         )
     else:
         raise ValueError(f"Unsupported source type: {type(source)}")
@@ -353,8 +349,6 @@ def fetch_etf(
             instrument=instrument,
             start_date=start_date,
             end_date=end_date,
-            host=source.host,
-            port=source.port,
         )
     else:
         raise ValueError(f"Unsupported source type: {type(source)}")

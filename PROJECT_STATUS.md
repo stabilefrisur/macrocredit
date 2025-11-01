@@ -18,7 +18,7 @@
 | **License** | MIT |
 
 **Core Dependencies:**
-- `pandas>=2.2.0`, `numpy>=2.0.0`, `pyarrow>=17.0.0`
+- `pandas>=2.2.0`, `numpy>=2.0.0`, `pyarrow>=17.0.0`, `xbbg>=0.7.0`
 
 **Visualization:**
 - `plotly>=5.24.0`, `streamlit>=1.39.0` (optional)
@@ -86,6 +86,7 @@ src/macrocredit/
 
 **Implemented:**
 - File-based data loading with Parquet support (`FileSource`)
+- Bloomberg Terminal integration with xbbg wrapper (`BloombergSource`)
 - Schema validation for CDX, VIX, ETF data (`validate_cdx_schema`, `validate_vix_schema`, `validate_etf_schema`)
 - TTL-based caching system (`DataCache`)
 - Data registry with metadata tracking (`DataRegistry`)
@@ -93,8 +94,11 @@ src/macrocredit/
 - Provider pattern with `DataSource` protocol (`sources.py`)
 - Fetch functions: `fetch_cdx`, `fetch_vix`, `fetch_etf`
 
+**Requirements:**
+- Bloomberg integration requires active Bloomberg Terminal session
+- xbbg wrapper included in standard dependencies
+
 **Planned:**
-- 🔜 Bloomberg Terminal integration (`BloombergSource` - stub exists in `providers/bloomberg.py`)
 - 🔜 REST API provider pattern
 
 **Not in Scope:**
@@ -281,16 +285,21 @@ signals = compute_registered_signals(registry, market_data, config)
 **Files:**
 - `src/macrocredit/data/sources.py` - Protocol definition
 - `src/macrocredit/data/providers/file.py` - File implementation
-- `src/macrocredit/data/providers/bloomberg.py` - Bloomberg stub
+- `src/macrocredit/data/providers/bloomberg.py` - Bloomberg Terminal implementation
 
 **Current Implementations:**
 - ✅ `FileSource` - Local Parquet/CSV files
-- 🔜 `BloombergSource` - Bloomberg Terminal API (stub)
+- ✅ `BloombergSource` - Bloomberg Terminal via xbbg (requires active session)
 
 **Example:**
 ```python
-source = FileSource("data/raw/cdx_data.parquet", cache=cache)
+# File-based
+source = FileSource("data/raw/cdx_data.parquet")
 cdx_df = fetch_cdx(source, index_name="CDX_IG_5Y")
+
+# Bloomberg Terminal
+source = BloombergSource()
+cdx_df = fetch_cdx(source, index_name="CDX_IG", tenor="5Y")
 ```
 
 ### 4. Functions Over Classes

@@ -501,12 +501,10 @@ dependencies = [
     { name = "numpy" },
     { name = "pandas" },
     { name = "pyarrow" },
+    { name = "xbbg" },
 ]
 
 [package.optional-dependencies]
-bloomberg = [
-    { name = "xbbg" },
-]
 dev = [
     { name = "black" },
     { name = "mypy" },
@@ -535,9 +533,9 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6.0" },
     { name = "streamlit", marker = "extra == 'viz'", specifier = ">=1.39.0" },
-    { name = "xbbg", marker = "extra == 'bloomberg'", specifier = ">=0.7.0" },
+    { name = "xbbg", specifier = ">=0.7.0" },
 ]
-provides-extras = ["dev", "viz", "bloomberg"]
+provides-extras = ["dev", "viz"]
 
 [[package]]
 name = "markupsafe"

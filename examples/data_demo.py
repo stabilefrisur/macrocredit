@@ -2,14 +2,13 @@
 Data Layer Demonstration - Loading, Validation, and Caching
 
 Demonstrates the data layer workflow for market data:
-1. Generate synthetic CDX, VIX, and ETF market data
-2. Save data to Parquet files in data/raw/
-3. Load data with automatic schema validation:
+1. Fetch CDX, VIX, and ETF market data from Bloomberg Terminal
+2. Load data with automatic schema validation:
    - CDX index spreads (validate_cdx_schema)
    - VIX volatility levels (validate_vix_schema)
    - ETF prices (validate_etf_schema)
-4. Demonstrate caching behavior (second fetch uses cache)
-5. Display summary statistics and data quality metrics
+3. Demonstrate caching behavior (second fetch uses cache)
+4. Display summary statistics and data quality metrics
 
 Output: Validated DataFrames with DatetimeIndex and quality metrics
 
@@ -19,15 +18,19 @@ Key Features:
   - Business logic checks (spread/price bounds)
   - Transparent caching for repeated fetches
   - Clean separation of data layer from models layer
+
+Requirements:
+  - Active Bloomberg Terminal session
+  - xbbg package installed: uv sync --extra bloomberg
 """
 
 import logging
 
-from macrocredit.data.sample_data import generate_full_sample_sources
 from macrocredit.data import (
     fetch_cdx,
     fetch_vix,
     fetch_etf,
+    BloombergSource,
 )
 
 # Configure logging
@@ -42,34 +45,26 @@ def main() -> None:
     """Run data layer demonstration."""
     logger.info("Starting data layer demonstration")
 
-    # Generate sample data and get FileSource configs
-    logger.info("Generating sample dataset...")
-    sources = generate_full_sample_sources(
-        output_dir="data/raw",
-        start_date="2023-01-01",
-        periods=252,
-        seed=42,
-    )
-
-    logger.info("Sample data sources created:")
-    for data_type, source in sources.items():
-        logger.info("  %s: %s", data_type, source.path)
+    # Configure Bloomberg Terminal data source
+    logger.info("Configuring Bloomberg Terminal data source...")
+    source = BloombergSource()
+    logger.info("Bloomberg source configured (requires active Terminal session)")
 
     # Fetch individual data sources
-    logger.info("\nFetching data sources individually...")
+    logger.info("\nFetching data from Bloomberg Terminal...")
 
-    cdx_ig = fetch_cdx(sources["cdx"], index_name="CDX_IG_5Y")
+    cdx_ig = fetch_cdx(source, index_name="CDX_IG", tenor="5Y")
     logger.info("CDX IG fetched: %d rows, spread_mean=%.2f", len(cdx_ig), cdx_ig["spread"].mean())
 
-    vix = fetch_vix(sources["vix"])
+    vix = fetch_vix(source)
     logger.info("VIX fetched: %d rows, vix_mean=%.2f", len(vix), vix["close"].mean())
 
-    hyg = fetch_etf(sources["etf"], ticker="HYG")
+    hyg = fetch_etf(source, ticker="HYG")
     logger.info("HYG fetched: %d rows, price_mean=%.2f", len(hyg), hyg["close"].mean())
 
     # Demonstrate caching by fetching again
     logger.info("\nDemonstrating cache functionality...")
-    cdx_ig_cached = fetch_cdx(sources["cdx"], index_name="CDX_IG_5Y")
+    cdx_ig_cached = fetch_cdx(source, index_name="CDX_IG", tenor="5Y")
     logger.info("CDX IG from cache: %d rows", len(cdx_ig_cached))
 
     # Display summary statistics

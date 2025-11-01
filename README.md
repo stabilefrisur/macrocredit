@@ -26,13 +26,18 @@ uv run python examples/backtest_demo.py
 ### Basic Usage
 
 ```python
-from macrocredit.data import fetch_cdx, fetch_etf, FileSource
+from macrocredit.data import fetch_cdx, fetch_etf, FileSource, BloombergSource
 from macrocredit.models import compute_cdx_etf_basis, SignalConfig
 from macrocredit.backtest import run_backtest, BacktestConfig
 
-# Load market data with validation
+# Load market data with validation (file-based)
 cdx_df = fetch_cdx(FileSource("data/raw/cdx_data.parquet"), index_name="CDX_IG_5Y")
 etf_df = fetch_etf(FileSource("data/raw/etf_data.parquet"), ticker="HYG")
+
+# Or use Bloomberg Terminal (requires active session and xbbg package)
+# source = BloombergSource()
+# cdx_df = fetch_cdx(source, index_name="CDX_IG", tenor="5Y")
+# etf_df = fetch_etf(source, ticker="HYG")
 
 # Generate signal
 signal_config = SignalConfig(lookback=20, min_periods=10)
@@ -94,10 +99,10 @@ macrocredit/
 ✅ **Deterministic backtesting** with transaction cost modeling  
 ✅ **Interactive visualization** with Plotly charts (equity, signals, drawdown)  
 ✅ **Parquet-based persistence** with JSON metadata registry  
-✅ **Comprehensive logging** with run metadata tracking
+✅ **Comprehensive logging** with run metadata tracking  
+✅ **Bloomberg Terminal integration** via xbbg wrapper (included by default, requires active Terminal session)
 
 **Planned Features:**
-- 🔜 Bloomberg data integration (stub implementation in place)
 - 🔜 Streamlit dashboard (stub exists, not yet implemented)
 - 🔜 Advanced attribution charts (stubs with NotImplementedError)
 
