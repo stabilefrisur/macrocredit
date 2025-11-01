@@ -12,7 +12,7 @@
 |----------|-------|
 | **Project Type** | Systematic fixed-income research framework |
 | **Primary Focus** | CDX overlay tactical credit strategies |
-| **Python Version** | 3.13+ (modern syntax, no legacy compatibility) |
+| **Python Version** | 3.12 (modern syntax, no legacy compatibility) |
 | **Environment Manager** | `uv` |
 | **Maturity Level** | Early-stage research framework |
 | **License** | MIT |
@@ -74,7 +74,7 @@ src/aponyx/
 **Design Principles:**
 1. **Modularity:** Layers are decoupled; data layer knows nothing about strategy logic
 2. **Reproducibility:** Deterministic outputs with seed control and metadata logging
-3. **Type Safety:** Strict type hints using Python 3.13 syntax (`str | None`, `dict[str, Any]`)
+3. **Type Safety:** Strict type hints using modern Python syntax (`str | None`, `dict[str, Any]`)
 4. **Simplicity:** Functions over classes; `@dataclass` for data containers
 5. **Transparency:** Clear separation of strategy logic from infrastructure
 
@@ -348,7 +348,7 @@ logging.basicConfig(...)  # User's responsibility, not library's
 
 **Examples:** See any module in `src/aponyx/` for consistent logging patterns.
 
-### 6. Type Hints (Python 3.13 Syntax)
+### 6. Type Hints (Modern Python Syntax)
 
 **Use built-in generics and union syntax:**
 ```python
@@ -446,7 +446,7 @@ PerformanceMetrics
 
 ### 1. No Backward Compatibility
 
-**Decision:** Use modern Python 3.13 syntax without legacy support.
+**Decision:** Use modern Python syntax without legacy support.
 
 **Rationale:**
 - Early-stage project allows adopting best practices immediately
@@ -632,7 +632,7 @@ LICENSE                    # MIT license
 This document provides comprehensive context for GPT-based AI assistants working on the aponyx project. When generating code or suggestions:
 
 1. **Respect layer boundaries** - Data layer cannot import from models/backtest
-2. **Use modern Python 3.13 syntax** - `str | None`, `dict[str, Any]`, etc.
+2. **Use modern Python syntax** - `str | None`, `dict[str, Any]`, etc.
 3. **Follow signal sign convention** - Positive = long credit risk
 4. **Add module-level loggers** - Never use `logging.basicConfig()`
 5. **Return figures, don't display** - Let caller control rendering

@@ -4,7 +4,7 @@ Runnable demonstrations of the aponyx framework using synthetic market data.
 
 ## Prerequisites
 
-- Python 3.13+ with `uv` environment manager
+- Python 3.12 with `uv` environment manager
 - Core dependencies: `pandas`, `numpy` (installed via `uv sync`)
 - Optional: visualization dependencies (`uv sync --extra viz` for plotting demos)
 

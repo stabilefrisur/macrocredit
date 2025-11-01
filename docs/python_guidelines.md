@@ -11,7 +11,7 @@ This document defines Python coding standards and best practices for the **Syste
 ## Python Version and Environment
 
 ### Version Requirements
-- **Python:** 3.13+
+- **Python:** 3.12
 - **Environment Manager:** `uv` (preferred)
 - **Package Manager:** `uv` or `pip`
 
@@ -49,7 +49,7 @@ line-length = 100
 target-version = ["py313"]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.12"
 ```
 
 ### Running Formatters
@@ -68,7 +68,7 @@ mypy src/
 
 ## Type Annotations
 
-### Modern Python 3.13 Syntax
+### Modern Python Syntax
 Use **built-in generics** and **union syntax** (PEP 604):
 
 ✅ **CORRECT:**
@@ -751,7 +751,7 @@ Before committing code, ensure:
 - [ ] **Logging follows standards** (module-level logger, %-formatting)
 - [ ] **Tests include edge cases** and error conditions
 - [ ] **No hardcoded paths** or credentials
-- [ ] **Type hints use Python 3.13 syntax** (no `Optional`, `Union`, etc.)
+- [ ] **Type hints use modern Python syntax** (no `Optional`, `Union`, etc.)
 
 ---
 

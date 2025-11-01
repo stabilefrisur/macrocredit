@@ -47,8 +47,8 @@ README.md             # Project overview and setup instructions
 
 ## ⚙️ Environment Standards
 
-- **Python:** 3.13  
-- **Type Hints:** Use modern Python 3.13 syntax (`str | None` instead of `Optional[str]`, `int | float` instead of `Union[int, float]`)
+- **Python:** 3.12  
+- **Type Hints:** Use modern Python syntax (`str | None` instead of `Optional[str]`, `int | float` instead of `Union[int, float]`)
 - **Environment:** managed with [`uv`](https://docs.astral.sh/uv/)  
 - **Linting / Formatting:** `ruff`, `black`, `mypy`
 - **Testing:** `pytest`
@@ -62,7 +62,7 @@ Use relative imports and avoid global state.
 
 ## Environment Standards
 
-- **Python:** 3.13
+- **Python:** 3.12
 
 ---
 
@@ -78,7 +78,7 @@ Use relative imports and avoid global state.
 
 ### Style
 - Follow **PEP 8** and **type hints** strictly.
-- Use **Python 3.13 type syntax**: `str | None` not `Optional[str]`, `int | float` not `Union[int, float]`.
+- Use **modern Python type syntax**: `str | None` not `Optional[str]`, `int | float` not `Union[int, float]`.
 - Use **built-in generics**: `list[str]` not `List[str]`, `dict[str, Any]` not `Dict[str, Any]`.
 - Use **black** and **ruff** formatting conventions.
 - Add **docstrings** and comments explaining rationale and data flow.
@@ -377,7 +377,7 @@ update docs.
 ### Multi-file Commits
 When changing multiple files, use the most significant type and describe the overall change:
 ```
-refactor: Modernize type hints to Python 3.13 syntax
+refactor: Modernize type hints to modern Python syntax
 
 - Update copilot instructions with new standards
 - Add comprehensive Python guidelines document

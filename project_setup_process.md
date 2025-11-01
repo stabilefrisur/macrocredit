@@ -14,10 +14,10 @@ Prerequisites:
 ## Quick start
 
 
-Initialize a new project and create a venv (example using Python 3.13):
+Initialize a new project and create a venv (example using Python 3.12):
 
 ```bash
-uv init my_project --lib --python 3.13
+uv init my_project --lib --python 3.12
 cd my_project
 # create the venv (uses .python-version if present)
 uv venv

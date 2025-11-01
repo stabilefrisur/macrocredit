@@ -13,7 +13,7 @@ description: 'Review the ${workspaceFolder} implementation layer'
 - **Research focus:** Minimal infrastructure maintenance burden
 - **Function-first:** Classes only when state/lifecycle management needed
 - **Extensibility:** Clean interfaces for integrating external packages later
-- **Python 3.13:** Modern type syntax (`str | None`, `list[str]`, `dict[str, Any]`)
+- **Python 3.12:** Modern type syntax (`str | None`, `list[str]`, `dict[str, Any]`)
 
 **Layer Hierarchy:**
 ```
@@ -34,7 +34,7 @@ config/ → data/ ↔ persistence/ → models/ → backtest/ → visualization/
 - [ ] Single responsibility per module
 - [ ] Uses `Protocol` or `ABC` for swappable components
 - [ ] Extension points for integrating external packages
-- [ ] Modern Python 3.13 type annotations throughout
+- [ ] Modern Python type annotations throughout
 
 ### 2. Code Organization
 - [ ] Functions preferred over classes (classes only for state/lifecycle)
@@ -50,7 +50,7 @@ config/ → data/ ↔ persistence/ → models/ → backtest/ → visualization/
 - [ ] No circular dependencies
 
 ### 4. Type Safety & Docs
-- [ ] Complete type hints using Python 3.13 syntax (no `Optional`, `Union`, `List`, `Dict`)
+- [ ] Complete type hints using modern Python syntax (no `Optional`, `Union`, `List`, `Dict`)
 - [ ] NumPy-style docstrings with Parameters, Returns, Raises, Examples
 - [ ] Signal directionality documented (models layer)
 - [ ] Public functions fully documented

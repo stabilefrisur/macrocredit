@@ -51,11 +51,11 @@ git checkout -b master
 
 ```powershell
 # Check available versions
-uv pip index versions <PackageName>
+pip index versions <PackageName>
 
 # Download the latest version (adjust version as needed)
 $version = "X.Y.Z"
-uv pip download --no-deps --no-binary :all: <PackageName>
+pip download --no-deps --no-binary :all: <PackageName>
 ```
 
 This downloads the `.tar.gz` source distribution to the current directory.

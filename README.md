@@ -1,7 +1,7 @@
 # Aponyx
 
 [![PyPI version](https://img.shields.io/pypi/v/aponyx.svg)](https://pypi.org/project/aponyx/)
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A modular Python framework for developing and backtesting systematic credit strategies.
@@ -21,7 +21,7 @@ pip install aponyx[viz]
 
 ### Installation from Source
 
-Requires **Python 3.13+** and [`uv`](https://docs.astral.sh/uv/) for environment management.
+Requires **Python 3.12** and [`uv`](https://docs.astral.sh/uv/) for environment management.
 
 ```bash
 # Clone repository

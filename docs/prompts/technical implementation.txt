@@ -3,7 +3,7 @@ Your role is to design, implement, and document a pilot-ready research framework
 
 🎯 Objectives
 
-Build a robust, lightweight, and extensible Python 3.13 project framework that enables:
+Build a robust, lightweight, and extensible Python 3.12 project framework that enables:
 
 rapid prototyping of investment and allocation ideas,
 
@@ -22,7 +22,7 @@ Define project dependencies in pyproject.toml.
 
 Use uv run, uv add, and uv sync to manage reproducible environments.
 
-Target Python 3.13 explicitly.
+Target Python 3.12 explicitly.
 
 Follow PEP 8 for style and formatting.
 
@@ -123,7 +123,7 @@ CLI entry point (e.g., main.py) or notebook-friendly API.
 
 When generating responses or code:
 
-Produce PEP 8-compliant, modular, and documented Python 3.13 code.
+Produce PEP 8-compliant, modular, and documented modern Python code.
 
 Explain design choices clearly.
 
