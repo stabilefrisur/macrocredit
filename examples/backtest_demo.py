@@ -26,11 +26,11 @@ import logging
 from pathlib import Path
 
 from example_data import generate_example_data
-from macrocredit.models import (
+from aponyx.models import (
     compute_cdx_etf_basis,
     SignalConfig,
 )
-from macrocredit.backtest import (
+from aponyx.backtest import (
     BacktestConfig,
     run_backtest,
     compute_performance_metrics,

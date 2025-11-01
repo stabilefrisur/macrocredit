@@ -29,7 +29,7 @@ def main() -> None:
     logger.info("Streamlit app not yet implemented")
     raise NotImplementedError(
         "Streamlit dashboard is a placeholder. "
-        "Run with: streamlit run src/macrocredit/visualization/app.py"
+        "Run with: streamlit run src/aponyx/visualization/app.py"
     )
 
 

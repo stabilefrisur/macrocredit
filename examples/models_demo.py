@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 
 from example_data import generate_example_data
-from macrocredit.models import (
+from aponyx.models import (
     compute_cdx_etf_basis,
     SignalConfig,
 )

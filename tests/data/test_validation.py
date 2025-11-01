@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from macrocredit.data.validation import (
+from aponyx.data.validation import (
     validate_cdx_schema,
     validate_vix_schema,
     validate_etf_schema,

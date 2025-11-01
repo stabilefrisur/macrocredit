@@ -6,7 +6,7 @@ import numpy as np
 from pathlib import Path
 from datetime import datetime, timedelta
 
-from macrocredit.persistence.parquet_io import (
+from aponyx.persistence.parquet_io import (
     save_parquet,
     load_parquet,
     list_parquet_files,

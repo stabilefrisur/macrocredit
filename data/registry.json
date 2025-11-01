@@ -1,7 +1,7 @@
 {
   "cache_cdx_c681afa309f24571": {
     "end_date": "2023-09-09T00:00:00",
-    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\cache\\file\\cdx_c681afa309f24571.parquet",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\aponyx\\data\\cache\\file\\cdx_c681afa309f24571.parquet",
     "instrument": "cdx",
     "last_updated": null,
     "metadata": {
@@ -20,7 +20,7 @@
   },
   "cache_etf_0537080140eed0ee": {
     "end_date": "2023-09-09T00:00:00",
-    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\cache\\file\\etf_0537080140eed0ee.parquet",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\aponyx\\data\\cache\\file\\etf_0537080140eed0ee.parquet",
     "instrument": "etf",
     "last_updated": null,
     "metadata": {
@@ -38,7 +38,7 @@
   },
   "cache_vix_d09015690dfa93d9": {
     "end_date": "2023-09-09T00:00:00",
-    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\cache\\file\\vix_d09015690dfa93d9.parquet",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\aponyx\\data\\cache\\file\\vix_d09015690dfa93d9.parquet",
     "instrument": "vix",
     "last_updated": null,
     "metadata": {
@@ -54,7 +54,7 @@
   },
   "cdx_hy_5y": {
     "end_date": "2024-10-25T00:00:00",
-    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\cdx_hy_5y.parquet",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\aponyx\\data\\raw\\cdx_hy_5y.parquet",
     "instrument": "CDX.NA.HY",
     "metadata": {
       "frequency": "daily",
@@ -67,7 +67,7 @@
   },
   "cdx_ig_5y": {
     "end_date": "2024-10-25T00:00:00",
-    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\cdx_ig_5y.parquet",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\aponyx\\data\\raw\\cdx_ig_5y.parquet",
     "instrument": "CDX.NA.IG",
     "metadata": {
       "frequency": "daily",
@@ -80,7 +80,7 @@
   },
   "hyg_etf": {
     "end_date": "2024-10-25T00:00:00",
-    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\hyg_etf.parquet",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\aponyx\\data\\raw\\hyg_etf.parquet",
     "instrument": "HYG",
     "metadata": {
       "frequency": "daily",
@@ -94,7 +94,7 @@
   },
   "vix": {
     "end_date": "2024-10-25T00:00:00",
-    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\macrocredit\\data\\raw\\vix.parquet",
+    "file_path": "C:\\Users\\ROG3003\\PythonProjects\\aponyx\\data\\raw\\vix.parquet",
     "instrument": "VIX",
     "metadata": {
       "frequency": "daily",

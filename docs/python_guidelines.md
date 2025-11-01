@@ -219,12 +219,12 @@ Key Components
 
 Dependencies
 ------------
-Requires cleaned market data from `macrocredit.data.loader`.
-Outputs results compatible with `macrocredit.backtest.engine`.
+Requires cleaned market data from `aponyx.data.loader`.
+Outputs results compatible with `aponyx.backtest.engine`.
 
 Examples
 --------
->>> from macrocredit.models.cdx_overlay_model import CDXOverlayModel
+>>> from aponyx.models.cdx_overlay_model import CDXOverlayModel
 >>> model = CDXOverlayModel(lookback=20, threshold=1.5)
 >>> signals = model.generate_signals(market_data)
 """
@@ -424,7 +424,7 @@ class StrategyConfig:
 
 ### Module Structure
 ```
-src/macrocredit/
+src/aponyx/
   data/          # Data loading, cleaning, transformation
   models/        # Signal generation, strategy logic
   backtest/      # Backtesting engine, performance tracking
@@ -499,7 +499,7 @@ tests/
 import pytest
 import pandas as pd
 import numpy as np
-from macrocredit.models.cdx_overlay_model import compute_spread_momentum
+from aponyx.models.cdx_overlay_model import compute_spread_momentum
 
 
 @pytest.fixture
@@ -545,7 +545,7 @@ def test_compute_spread_momentum_empty_series():
 pytest
 
 # Run with coverage
-pytest --cov=macrocredit --cov-report=html
+pytest --cov=aponyx --cov-report=html
 
 # Run specific test file
 pytest tests/models/test_cdx_overlay_model.py
@@ -576,16 +576,16 @@ import numpy as np
 from plotly import graph_objects as go
 
 # 3. Local application
-from macrocredit.config import DATA_DIR
-from macrocredit.persistence import save_parquet, load_parquet
-from macrocredit.models.base import BaseModel
+from aponyx.config import DATA_DIR
+from aponyx.persistence import save_parquet, load_parquet
+from aponyx.models.base import BaseModel
 ```
 
 ### Relative vs Absolute Imports
 
 ✅ **Use relative imports within package:**
 ```python
-# In macrocredit/models/cdx_overlay_model.py
+# In aponyx/models/cdx_overlay_model.py
 from ..data.loader import load_market_data
 from ..persistence.registry import register_dataset
 from .base import BaseModel
@@ -594,8 +594,8 @@ from .base import BaseModel
 ✅ **Use absolute imports from outside package:**
 ```python
 # In examples/ or tests/
-from macrocredit.models.cdx_overlay_model import CDXOverlayModel
-from macrocredit.persistence import save_parquet
+from aponyx.models.cdx_overlay_model import CDXOverlayModel
+from aponyx.persistence import save_parquet
 ```
 
 ---
@@ -678,7 +678,7 @@ def generate_synthetic_data(n_samples: int = 1000) -> pd.DataFrame:
 
 ```python
 from datetime import datetime
-from macrocredit import __version__
+from aponyx import __version__
 
 def run_backtest(params: dict[str, Any]) -> dict[str, Any]:
     """Run backtest with full metadata logging."""

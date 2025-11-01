@@ -31,8 +31,8 @@ data/
 ### Basic Flow
 
 ```python
-from macrocredit.data import fetch_cdx, FileSource
-from macrocredit.data.cache import Cache
+from aponyx.data import fetch_cdx, FileSource
+from aponyx.data.cache import Cache
 
 # Create cache with 1-hour TTL
 cache = Cache(ttl_seconds=3600)
@@ -86,7 +86,7 @@ cache_key = cache.generate_key(
 ### TTL Settings
 
 ```python
-from macrocredit.data.cache import Cache
+from aponyx.data.cache import Cache
 
 # Short TTL for intraday research (15 minutes)
 cache = Cache(ttl_seconds=900)
@@ -105,7 +105,7 @@ cache = None  # Or don't pass cache parameter
 
 ```python
 from pathlib import Path
-from macrocredit.data.cache import Cache
+from aponyx.data.cache import Cache
 
 # Default: data/cache/file/
 cache = Cache()
@@ -140,8 +140,8 @@ cache.clear_provider("file")
 ### Basic Caching
 
 ```python
-from macrocredit.data import fetch_cdx, FileSource
-from macrocredit.data.cache import Cache
+from aponyx.data import fetch_cdx, FileSource
+from aponyx.data.cache import Cache
 
 # Setup cache
 cache = Cache(ttl_seconds=3600)
@@ -162,9 +162,9 @@ print(f"Cached load: {time.time() - start:.2f}s")  # ~0.01s
 ### Signal Research Workflow
 
 ```python
-from macrocredit.data import fetch_cdx, fetch_vix, fetch_etf, FileSource
-from macrocredit.data.cache import Cache
-from macrocredit.models import compute_cdx_vix_gap, compute_cdx_etf_basis
+from aponyx.data import fetch_cdx, fetch_vix, fetch_etf, FileSource
+from aponyx.data.cache import Cache
+from aponyx.models import compute_cdx_vix_gap, compute_cdx_etf_basis
 
 # Single cache instance for all data loads
 cache = Cache(ttl_seconds=3600)
@@ -183,8 +183,8 @@ signal2 = compute_cdx_etf_basis(cdx_df, etf_df)    # Reuses cached CDX data
 
 ```python
 # Cell 1: Setup (run once)
-from macrocredit.data import fetch_cdx, FileSource
-from macrocredit.data.cache import Cache
+from aponyx.data import fetch_cdx, FileSource
+from aponyx.data.cache import Cache
 
 cache = Cache(ttl_seconds=3600)
 source = FileSource("data/raw/cdx.parquet", cache=cache)

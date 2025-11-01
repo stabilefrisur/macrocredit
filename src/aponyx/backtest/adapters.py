@@ -7,7 +7,7 @@ our domain-specific API. Uncomment and implement when ready to integrate.
 Usage
 -----
 # Uncomment the imports and implementation when ready to use
-# from macrocredit.backtest.adapters import VectorBTEngine
+# from aponyx.backtest.adapters import VectorBTEngine
 # engine = VectorBTEngine()
 # result = engine.run(signal, spread, config)
 """

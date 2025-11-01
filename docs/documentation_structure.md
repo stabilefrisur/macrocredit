@@ -29,7 +29,7 @@
 - **`README.md`** - Quick start commands and script overview
 - **`*_demo.py`** - Self-documenting executable demonstrations
 
-### Source Code (`src/macrocredit/`)
+### Source Code (`src/aponyx/`)
 - **Module/function docstrings** - NumPy-style API documentation
 - **Inline comments** - Implementation details and rationale
 
@@ -133,7 +133,7 @@ def compute_signal(spread: pd.Series, window: int = 20) -> pd.Series:
 
 ### ❌ Implementation README Files
 
-**Bad:** Creating `src/macrocredit/models/README.md`
+**Bad:** Creating `src/aponyx/models/README.md`
 
 **Why:** Violates single source of truth. Details belong in docstrings.
 

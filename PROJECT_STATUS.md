@@ -1,4 +1,4 @@
-# Project Status — Macrocredit
+# Project Status — aponyx
 
 **Last Updated:** October 31, 2025  
 **Version:** 0.1.0  
@@ -30,7 +30,7 @@
 
 ## Project Purpose
 
-Macrocredit is a **systematic fixed-income research framework** for developing and backtesting tactical credit strategies. The project centers on a **CDX overlay pilot strategy** that exploits temporary dislocations in liquid credit indices to generate short-term tactical alpha.
+aponyx is a **systematic fixed-income research framework** for developing and backtesting tactical credit strategies. The project centers on a **CDX overlay pilot strategy** that exploits temporary dislocations in liquid credit indices to generate short-term tactical alpha.
 
 **Core Investment Objectives:**
 - Generate short-term tactical alpha (holding period: days to weeks)
@@ -51,7 +51,7 @@ Macrocredit is a **systematic fixed-income research framework** for developing a
 The project implements a **strict layered architecture** with functional boundaries:
 
 ```
-src/macrocredit/
+src/aponyx/
   data/               # Load, validate, transform market data
   models/             # Signal generation and strategy logic
   backtest/           # Simulation, P&L tracking, metrics
@@ -82,7 +82,7 @@ src/macrocredit/
 
 ## Implementation Status
 
-### ✅ Data Layer (`src/macrocredit/data/`)
+### ✅ Data Layer (`src/aponyx/data/`)
 
 **Implemented:**
 - File-based data loading with Parquet support (`FileSource`)
@@ -105,7 +105,7 @@ src/macrocredit/
 - ❌ Database integration (files only by design)
 - ❌ Authentication/authorization (handled externally)
 
-### ✅ Models Layer (`src/macrocredit/models/`)
+### ✅ Models Layer (`src/aponyx/models/`)
 
 **Implemented:**
 - Three pilot signals:
@@ -130,7 +130,7 @@ src/macrocredit/
 **Not in Scope:**
 - ❌ Real-time signal generation (research framework only)
 
-### ✅ Backtest Layer (`src/macrocredit/backtest/`)
+### ✅ Backtest Layer (`src/aponyx/backtest/`)
 
 **Implemented:**
 - Core backtesting engine (`run_backtest`)
@@ -159,7 +159,7 @@ src/macrocredit/
 - ❌ Real-time trading integration
 - ❌ Production risk management
 
-### ✅ Persistence Layer (`src/macrocredit/persistence/`)
+### ✅ Persistence Layer (`src/aponyx/persistence/`)
 
 **Implemented:**
 - Parquet I/O with column filtering and date ranges (`save_parquet`, `load_parquet`)
@@ -176,7 +176,7 @@ src/macrocredit/
 - ❌ Database backends (Parquet/JSON only by design)
 - ❌ Cloud storage integration
 
-### 🔜 Visualization Layer (`src/macrocredit/visualization/`)
+### 🔜 Visualization Layer (`src/aponyx/visualization/`)
 
 **Implemented:**
 - Core plotting functions:
@@ -255,16 +255,16 @@ src/macrocredit/
 
 **Rationale:** Ensures clear interpretation when evaluating signals individually or comparing performance across different signal ideas.
 
-**Implementation:** See `src/macrocredit/models/signals.py` for examples.
+**Implementation:** See `src/aponyx/models/signals.py` for examples.
 
 ### 2. Signal Registry Pattern
 
 Signals are managed via **JSON catalog** + **compute function registry**:
 
 **Files:**
-- `src/macrocredit/models/signal_catalog.json` - Signal metadata
-- `src/macrocredit/models/registry.py` - Registry implementation
-- `src/macrocredit/models/catalog.py` - Catalog management
+- `src/aponyx/models/signal_catalog.json` - Signal metadata
+- `src/aponyx/models/registry.py` - Registry implementation
+- `src/aponyx/models/catalog.py` - Catalog management
 
 **Benefits:**
 - Add new signals by editing JSON + implementing compute function
@@ -274,7 +274,7 @@ Signals are managed via **JSON catalog** + **compute function registry**:
 
 **Usage:**
 ```python
-registry = SignalRegistry("src/macrocredit/models/signal_catalog.json")
+registry = SignalRegistry("src/aponyx/models/signal_catalog.json")
 signals = compute_registered_signals(registry, market_data, config)
 ```
 
@@ -283,9 +283,9 @@ signals = compute_registered_signals(registry, market_data, config)
 **Abstract `DataSource` protocol** supports multiple providers:
 
 **Files:**
-- `src/macrocredit/data/sources.py` - Protocol definition
-- `src/macrocredit/data/providers/file.py` - File implementation
-- `src/macrocredit/data/providers/bloomberg.py` - Bloomberg Terminal implementation
+- `src/aponyx/data/sources.py` - Protocol definition
+- `src/aponyx/data/providers/file.py` - File implementation
+- `src/aponyx/data/providers/bloomberg.py` - Bloomberg Terminal implementation
 
 **Current Implementations:**
 - ✅ `FileSource` - Local Parquet/CSV files
@@ -319,9 +319,9 @@ cdx_df = fetch_cdx(source, index_name="CDX_IG", tenor="5Y")
 - `PerformanceMetrics` - Performance statistics
 
 **Files demonstrating this pattern:**
-- `src/macrocredit/models/signals.py` - Pure functions for signal computation
-- `src/macrocredit/backtest/config.py` - Dataclass configurations
-- `src/macrocredit/backtest/engine.py` - Functional backtest logic
+- `src/aponyx/models/signals.py` - Pure functions for signal computation
+- `src/aponyx/backtest/config.py` - Dataclass configurations
+- `src/aponyx/backtest/engine.py` - Functional backtest logic
 
 ### 5. Logging Standards
 
@@ -346,7 +346,7 @@ logger.info("Loaded %d rows from %s", len(df), path)
 logging.basicConfig(...)  # User's responsibility, not library's
 ```
 
-**Examples:** See any module in `src/macrocredit/` for consistent logging patterns.
+**Examples:** See any module in `src/aponyx/` for consistent logging patterns.
 
 ### 6. Type Hints (Python 3.13 Syntax)
 
@@ -366,7 +366,7 @@ def process_data(
 from typing import Optional, Union, List, Dict
 ```
 
-**Files:** All modules in `src/macrocredit/` use modern type syntax.
+**Files:** All modules in `src/aponyx/` use modern type syntax.
 
 ---
 
@@ -434,11 +434,11 @@ PerformanceMetrics
 ```
 
 **Key Files:**
-- Data loading: `src/macrocredit/data/fetch.py`
-- Signal generation: `src/macrocredit/models/registry.py`
-- Backtesting: `src/macrocredit/backtest/engine.py`
-- Metrics: `src/macrocredit/backtest/metrics.py`
-- Visualization: `src/macrocredit/visualization/plots.py`
+- Data loading: `src/aponyx/data/fetch.py`
+- Signal generation: `src/aponyx/models/registry.py`
+- Backtesting: `src/aponyx/backtest/engine.py`
+- Metrics: `src/aponyx/backtest/metrics.py`
+- Visualization: `src/aponyx/visualization/plots.py`
 
 ---
 
@@ -465,7 +465,7 @@ PerformanceMetrics
 - No server dependencies
 - Sufficient for pilot strategy data volumes
 
-**Impact:** All persistence via `src/macrocredit/persistence/parquet_io.py` and `json_io.py`.
+**Impact:** All persistence via `src/aponyx/persistence/parquet_io.py` and `json_io.py`.
 
 ### 3. Independent Signal Evaluation
 
@@ -489,7 +489,7 @@ PerformanceMetrics
 - Enables post-processing (annotations, subplot composition)
 - Testable without rendering
 
-**Impact:** User must call `.show()` or `st.plotly_chart()` explicitly. See `src/macrocredit/visualization/plots.py`.
+**Impact:** User must call `.show()` or `st.plotly_chart()` explicitly. See `src/aponyx/visualization/plots.py`.
 
 ### 5. TTL-Based Caching (Not LRU)
 
@@ -500,7 +500,7 @@ PerformanceMetrics
 - No complex invalidation logic
 - Manual cleanup acceptable for single-user research
 
-**Impact:** Cache grows until manual cleanup; no automatic eviction. See `src/macrocredit/data/cache.py`.
+**Impact:** Cache grows until manual cleanup; no automatic eviction. See `src/aponyx/data/cache.py`.
 
 ### 6. No Authentication in Library
 
@@ -557,16 +557,16 @@ save_json(metadata, "logs/run_metadata.json")
 ```
 
 **Files:**
-- Sample data with fixed seeds: `src/macrocredit/data/sample_data.py`
-- Metadata logging: `src/macrocredit/backtest/engine.py`
-- Metadata I/O: `src/macrocredit/persistence/json_io.py`
+- Sample data with fixed seeds: `src/aponyx/data/sample_data.py`
+- Metadata logging: `src/aponyx/backtest/engine.py`
+- Metadata I/O: `src/aponyx/persistence/json_io.py`
 
 ---
 
 ## Repository Structure
 
 ```
-src/macrocredit/           # Main package
+src/aponyx/           # Main package
   data/                    # Data loading, validation, caching
     providers/             # Provider implementations (file, bloomberg)
   models/                  # Signal computation and registry
@@ -620,9 +620,9 @@ LICENSE                    # MIT license
 
 ## Next Steps (Inferred from Stubs)
 
-1. Complete Streamlit dashboard implementation (`src/macrocredit/visualization/app.py`)
+1. Complete Streamlit dashboard implementation (`src/aponyx/visualization/app.py`)
 2. Implement signal attribution and exposure charts (`plot_attribution`, `plot_exposures`)
-3. Add Bloomberg Terminal data provider (`src/macrocredit/data/providers/bloomberg.py`)
+3. Add Bloomberg Terminal data provider (`src/aponyx/data/providers/bloomberg.py`)
 4. Expand signal catalog with additional ideas
 5. Multi-signal combination experiments
 
@@ -630,7 +630,7 @@ LICENSE                    # MIT license
 
 ## Context for AI Assistants
 
-This document provides comprehensive context for GPT-based AI assistants working on the macrocredit project. When generating code or suggestions:
+This document provides comprehensive context for GPT-based AI assistants working on the aponyx project. When generating code or suggestions:
 
 1. **Respect layer boundaries** - Data layer cannot import from models/backtest
 2. **Use modern Python 3.13 syntax** - `str | None`, `dict[str, Any]`, etc.

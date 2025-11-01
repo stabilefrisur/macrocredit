@@ -70,7 +70,7 @@ class SignalRegistry:
 
     Examples
     --------
-    >>> registry = SignalRegistry("src/macrocredit/models/signal_catalog.json")
+    >>> registry = SignalRegistry("src/aponyx/models/signal_catalog.json")
     >>> enabled = registry.get_enabled()
     >>> metadata = registry.get_metadata("cdx_etf_basis")
     """

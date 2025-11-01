@@ -1,6 +1,6 @@
 # Examples
 
-Runnable demonstrations of the macrocredit framework using synthetic market data.
+Runnable demonstrations of the aponyx framework using synthetic market data.
 
 ## Prerequisites
 
@@ -57,7 +57,7 @@ Total Trades: 42
 
 ### Common Issues
 
-**Import Error:** "No module named 'macrocredit'"
+**Import Error:** "No module named 'aponyx'"
 ```bash
 # Solution: Install package in development mode
 uv sync

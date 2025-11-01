@@ -84,7 +84,7 @@ def fetch_cdx(
 
     Examples
     --------
-    >>> from macrocredit.data import fetch_cdx, FileSource
+    >>> from aponyx.data import fetch_cdx, FileSource
     >>> df = fetch_cdx(FileSource("data/raw/cdx.parquet"), tenor="5Y")
     """
     source = source or DEFAULT_DATA_SOURCES.get("cdx")
@@ -204,7 +204,7 @@ def fetch_vix(
 
     Examples
     --------
-    >>> from macrocredit.data import fetch_vix, FileSource
+    >>> from aponyx.data import fetch_vix, FileSource
     >>> df = fetch_vix(FileSource("data/raw/vix.parquet"))
     """
     source = source or DEFAULT_DATA_SOURCES.get("vix")
@@ -303,7 +303,7 @@ def fetch_etf(
 
     Examples
     --------
-    >>> from macrocredit.data import fetch_etf, FileSource
+    >>> from aponyx.data import fetch_etf, FileSource
     >>> df = fetch_etf(FileSource("data/raw/etf.parquet"), ticker="HYG")
     """
     source = source or DEFAULT_DATA_SOURCES.get("etf")

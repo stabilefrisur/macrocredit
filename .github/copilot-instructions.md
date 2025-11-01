@@ -18,7 +18,7 @@ The framework supports:
 ### Repository Layout
 
 ```
-src/macrocredit/
+src/aponyx/
   data/               # Loaders, cleaning, transformation
   models/             # Signal & strategy logic
   backtest/           # Backtesting engine and risk tracking
@@ -135,7 +135,7 @@ def compute_spread_momentum(spread: pd.Series, window: int = 5) -> pd.Series:
 - **README**: Installation, project structure, quickstart commands
 
 **Never:**
-- Create README files in implementation directories (`src/macrocredit/*/README.md`)
+- Create README files in implementation directories (`src/aponyx/*/README.md`)
 - Duplicate API documentation outside of docstrings
 - Write tutorial-style docs that duplicate runnable examples
 - Document usage patterns in design docs (use examples instead)
@@ -271,7 +271,7 @@ def compute_vix_cdx_gap(
 - Add decorative emojis to code, comments, or docstrings.
 - Create classes when a simple function would suffice.
 - Use regular classes for data containers instead of `@dataclass`.
-- Create README files in implementation directories (`src/macrocredit/*/README.md`).
+- Create README files in implementation directories (`src/aponyx/*/README.md`).
 - Duplicate API documentation outside of module docstrings.
 - Write tutorial-style docs that duplicate runnable examples.
 - Implement authentication, authorization, or credential management (handled externally).

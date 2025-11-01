@@ -24,7 +24,7 @@ import pandas as pd
 from datetime import datetime
 
 from example_data import generate_persistence_data
-from macrocredit.persistence import (
+from aponyx.persistence import (
     save_parquet,
     load_parquet,
     save_json,
@@ -32,7 +32,7 @@ from macrocredit.persistence import (
     DataRegistry,
     DatasetEntry,
 )
-from macrocredit.config import DATA_DIR, REGISTRY_PATH
+from aponyx.config import DATA_DIR, REGISTRY_PATH
 
 
 # Configure logging for the demo
@@ -184,7 +184,7 @@ def save_run_metadata() -> None:
         "output_path": DATA_DIR / "processed" / "signals.parquet",
     }
 
-    from macrocredit.config import LOGS_DIR
+    from aponyx.config import LOGS_DIR
     output_path = save_json(metadata, LOGS_DIR / "run_metadata.json")
     print(f"  ✓ Saved metadata to {output_path}")
 

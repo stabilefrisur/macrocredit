@@ -8,7 +8,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Generator
 
-from macrocredit.models.registry import SignalRegistry, SignalMetadata
+from aponyx.models.registry import SignalRegistry, SignalMetadata
 
 
 @pytest.fixture

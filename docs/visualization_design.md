@@ -100,7 +100,7 @@ The class is **optional**—all functionality accessible via pure functions.
 **Use case:** Exploratory analysis, iterative development.
 
 ```python
-from macrocredit.visualization import plot_equity_curve, plot_signal
+from aponyx.visualization import plot_equity_curve, plot_signal
 
 # Inline display
 plot_equity_curve(backtest.pnl).show()
@@ -115,7 +115,7 @@ plot_signal(cdx_vix_gap, threshold_lines=[-2, 2]).show()
 
 ```python
 import streamlit as st
-from macrocredit.visualization import Visualizer
+from aponyx.visualization import Visualizer
 
 viz = Visualizer()
 st.plotly_chart(viz.equity_curve(pnl), use_container_width=True)
@@ -132,7 +132,7 @@ viz = Visualizer(theme=theme)
 **Use case:** Automated performance reports, regression testing.
 
 ```python
-from macrocredit.visualization import Visualizer
+from aponyx.visualization import Visualizer
 
 viz = Visualizer(export_path="./reports")
 for strategy in strategies:

@@ -9,9 +9,9 @@ import pytest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from macrocredit.models.catalog import compute_registered_signals, _validate_data_requirements
-from macrocredit.models.config import SignalConfig
-from macrocredit.models.registry import SignalRegistry, SignalMetadata
+from aponyx.models.catalog import compute_registered_signals, _validate_data_requirements
+from aponyx.models.config import SignalConfig
+from aponyx.models.registry import SignalRegistry, SignalMetadata
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ def mock_market_data() -> dict[str, pd.DataFrame]:
 def test_catalog_path() -> Path:
     """Get path to actual signal catalog."""
     # Use the real catalog for integration testing
-    return Path("src/macrocredit/models/signal_catalog.json")
+    return Path("src/aponyx/models/signal_catalog.json")
 
 
 def test_compute_registered_signals_all_enabled(

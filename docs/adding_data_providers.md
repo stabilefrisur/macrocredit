@@ -43,7 +43,7 @@ class DataSource(Protocol):
 
 ### Step 1: Create Provider Module
 
-Create `src/macrocredit/data/providers/my_provider.py`:
+Create `src/aponyx/data/providers/my_provider.py`:
 
 ```python
 """
@@ -136,7 +136,7 @@ class MyCustomSource:
 
 ### Step 2: Update Provider Init
 
-Add to `src/macrocredit/data/providers/__init__.py`:
+Add to `src/aponyx/data/providers/__init__.py`:
 
 ```python
 """Data provider implementations."""
@@ -154,7 +154,7 @@ __all__ = [
 
 ### Step 3: Create Fetch Function
 
-Add to `src/macrocredit/data/fetch.py`:
+Add to `src/aponyx/data/fetch.py`:
 
 ```python
 def fetch_my_data(
@@ -194,7 +194,7 @@ def fetch_my_data(
     raw_df = source.fetch(**query_params)
     
     # Validate using appropriate schema
-    from macrocredit.data.validation import validate_schema
+    from aponyx.data.validation import validate_schema
     validated_df = validate_schema(raw_df, schema_type="my_custom")
     
     logger.info("Fetched %d rows for %s", len(validated_df), ticker)
@@ -203,7 +203,7 @@ def fetch_my_data(
 
 ### Step 4: Add Schema Validation (Optional)
 
-If your data has a specific structure, add a schema in `src/macrocredit/data/schemas.py`:
+If your data has a specific structure, add a schema in `src/aponyx/data/schemas.py`:
 
 ```python
 from dataclasses import dataclass
@@ -230,8 +230,8 @@ Create `tests/data/test_my_provider.py`:
 
 import pytest
 import pandas as pd
-from macrocredit.data.providers import MyCustomSource
-from macrocredit.data import fetch_my_data
+from aponyx.data.providers import MyCustomSource
+from aponyx.data import fetch_my_data
 
 
 @pytest.fixture
@@ -346,8 +346,8 @@ class APISource:
 ### Usage
 
 ```python
-from macrocredit.data.providers import APISource
-from macrocredit.data.cache import Cache
+from aponyx.data.providers import APISource
+from aponyx.data.cache import Cache
 
 # Setup API source with caching
 cache = Cache(ttl_seconds=3600)
@@ -446,10 +446,10 @@ class RobustAPISource:
 
 ```python
 # Check import
-from macrocredit.data.providers import MyCustomSource  # Should work
+from aponyx.data.providers import MyCustomSource  # Should work
 
 # Verify __init__.py exports
-from macrocredit.data import providers
+from aponyx.data import providers
 print(dir(providers))  # Should list MyCustomSource
 ```
 
@@ -457,7 +457,7 @@ print(dir(providers))  # Should list MyCustomSource
 
 ```python
 # Ensure cache is passed to provider
-from macrocredit.data.cache import Cache
+from aponyx.data.cache import Cache
 
 cache = Cache()
 source = MyCustomSource(params, cache=cache)  # Pass cache here

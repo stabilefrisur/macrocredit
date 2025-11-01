@@ -1,7 +1,7 @@
 [project]
-name = "macrocredit"
+name = "aponyx"
+description = "Aponyx - Systematic Macro Credit Strategy Framework"
 version = "0.1.0"
-description = "Systematic Macro Credit - Pilot CDX Overlay Strategy Framework"
 readme = "README.md"
 authors = [
     { name = "Stabile Frisur", email = "26568863+stabilefrisur@users.noreply.github.com" }

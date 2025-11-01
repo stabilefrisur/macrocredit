@@ -24,11 +24,11 @@ class BacktestEngine(Protocol):
     Examples
     --------
     >>> # Our implementation
-    >>> from macrocredit.backtest import run_backtest
+    >>> from aponyx.backtest import run_backtest
     >>> result = run_backtest(signal, spread, config)
     >>>
     >>> # Future: vectorbt wrapper
-    >>> from macrocredit.backtest.adapters import VectorBTEngine
+    >>> from aponyx.backtest.adapters import VectorBTEngine
     >>> engine = VectorBTEngine()
     >>> result = engine.run(signal, spread, config)
     """
@@ -69,11 +69,11 @@ class PerformanceCalculator(Protocol):
     Examples
     --------
     >>> # Our implementation
-    >>> from macrocredit.backtest import compute_performance_metrics
+    >>> from aponyx.backtest import compute_performance_metrics
     >>> metrics = compute_performance_metrics(result.pnl, result.positions)
     >>>
     >>> # Future: quantstats wrapper
-    >>> from macrocredit.backtest.adapters import QuantStatsCalculator
+    >>> from aponyx.backtest.adapters import QuantStatsCalculator
     >>> calc = QuantStatsCalculator()
     >>> metrics = calc.compute(result.pnl, result.positions)
     """

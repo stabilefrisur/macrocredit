@@ -1,6 +1,6 @@
-# Systematic Macro Credit
+# Aponyx
 
-A modular Python framework for developing and backtesting systematic credit strategies, starting with a **CDX overlay pilot strategy**.
+A modular Python framework for developing and backtesting systematic credit strategies.
 
 ## Quick Start
 
@@ -10,8 +10,12 @@ Requires **Python 3.13+** and [`uv`](https://docs.astral.sh/uv/) for environment
 
 ```bash
 # Clone repository
-git clone https://github.com/stabilefrisur/macrocredit.git
-cd macrocredit
+git clone https://github.com/stabilefrisur/aponyx.git
+cd aponyx
+
+# Create virtual environment with uv
+uv venv
+source .venv/Scripts/activate  # Windows: .venv\Scripts\activate
 
 # Install dependencies
 uv sync
@@ -26,9 +30,9 @@ uv run python examples/backtest_demo.py
 ### Basic Usage
 
 ```python
-from macrocredit.data import fetch_cdx, fetch_etf, FileSource, BloombergSource
-from macrocredit.models import compute_cdx_etf_basis, SignalConfig
-from macrocredit.backtest import run_backtest, BacktestConfig
+from aponyx.data import fetch_cdx, fetch_etf, FileSource, BloombergSource
+from aponyx.models import compute_cdx_etf_basis, SignalConfig
+from aponyx.backtest import run_backtest, BacktestConfig
 
 # Load market data with validation (file-based)
 cdx_df = fetch_cdx(FileSource("data/raw/cdx_data.parquet"), index_name="CDX_IG_5Y")
@@ -52,8 +56,8 @@ print(f"Sharpe Ratio: {results.metrics['sharpe_ratio']:.2f}")
 ## Project Structure
 
 ```
-macrocredit/
-├── src/macrocredit/       # Core framework
+aponyx/
+├── src/aponyx/       # Core framework
 │   ├── data/              # Data loading, validation, transformation
 │   ├── models/            # Signal generation for credit strategies
 │   ├── backtest/          # Backtesting engine and metrics
@@ -69,11 +73,11 @@ macrocredit/
 
 | Layer | Purpose | Entry Point |
 |-------|---------|-------------|
-| **Data** | Load, validate, transform market data | `macrocredit.data` |
-| **Models** | Generate signals for independent evaluation | `macrocredit.models` |
-| **Backtest** | Simulate execution and compute metrics | `macrocredit.backtest` |
-| **Visualization** | Interactive charts and dashboards | `macrocredit.visualization` |
-| **Persistence** | Save/load data with metadata registry | `macrocredit.persistence` |
+| **Data** | Load, validate, transform market data | `aponyx.data` |
+| **Models** | Generate signals for independent evaluation | `aponyx.models` |
+| **Backtest** | Simulate execution and compute metrics | `aponyx.backtest` |
+| **Visualization** | Interactive charts and dashboards | `aponyx.visualization` |
+| **Persistence** | Save/load data with metadata registry | `aponyx.persistence` |
 
 ## Documentation
 
@@ -115,7 +119,7 @@ macrocredit/
 uv run pytest
 
 # With coverage
-uv run pytest --cov=macrocredit --cov-report=term-missing
+uv run pytest --cov=aponyx --cov-report=term-missing
 
 # Specific module
 uv run pytest tests/models/

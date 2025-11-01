@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 **Why this approach?**
 
-- ✅ **Hierarchical naming**: Logger names follow module structure (`macrocredit.persistence.parquet_io`)
+- ✅ **Hierarchical naming**: Logger names follow module structure (`aponyx.persistence.parquet_io`)
 - ✅ **Configurable at any level**: Users can control logging for entire package, submodules, or individual modules
 - ✅ **No global configuration in library code**: The library never calls `logging.basicConfig()` - that's the application's responsibility
 - ✅ **Works with pytest**: Tests run cleanly without logging output unless explicitly enabled
@@ -150,13 +150,13 @@ logging.basicConfig(
 import logging
 
 # Enable DEBUG for parquet_io only
-logging.getLogger("macrocredit.persistence.parquet_io").setLevel(logging.DEBUG)
+logging.getLogger("aponyx.persistence.parquet_io").setLevel(logging.DEBUG)
 
 # Disable INFO for json_io
-logging.getLogger("macrocredit.persistence.json_io").setLevel(logging.WARNING)
+logging.getLogger("aponyx.persistence.json_io").setLevel(logging.WARNING)
 
 # Enable all persistence layer at INFO
-logging.getLogger("macrocredit.persistence").setLevel(logging.INFO)
+logging.getLogger("aponyx.persistence").setLevel(logging.INFO)
 ```
 
 ### Production Configuration
@@ -165,14 +165,14 @@ logging.getLogger("macrocredit.persistence").setLevel(logging.INFO)
 import logging
 
 # Production: INFO to file, WARNING to console
-file_handler = logging.FileHandler("macrocredit.log")
+file_handler = logging.FileHandler("aponyx.log")
 file_handler.setLevel(logging.INFO)
 
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.WARNING)
 
-logging.getLogger("macrocredit").addHandler(file_handler)
-logging.getLogger("macrocredit").addHandler(console_handler)
+logging.getLogger("aponyx").addHandler(file_handler)
+logging.getLogger("aponyx").addHandler(console_handler)
 ```
 
 ### Testing (Silence Logs)
@@ -181,13 +181,13 @@ logging.getLogger("macrocredit").addHandler(console_handler)
 # In conftest.py or test setup
 import logging
 
-logging.getLogger("macrocredit").setLevel(logging.CRITICAL)
+logging.getLogger("aponyx").setLevel(logging.CRITICAL)
 ```
 
 Or use pytest's `caplog` fixture:
 ```python
 def test_something(caplog):
-    with caplog.at_level(logging.INFO, logger="macrocredit.persistence"):
+    with caplog.at_level(logging.INFO, logger="aponyx.persistence"):
         # Test code
         pass
     
@@ -226,10 +226,10 @@ def test_something(caplog):
 With `logging.basicConfig(level=logging.INFO)`:
 
 ```
-00:08:40 - macrocredit.persistence.parquet_io - INFO - Saving DataFrame to Parquet: path=data/cdx_ig_5y.parquet, rows=215, columns=2, compression=snappy
-00:08:41 - macrocredit.persistence.registry - INFO - Loaded existing registry: path=data/registry.json, datasets=4
-00:08:41 - macrocredit.persistence.parquet_io - INFO - Loading Parquet file: path=data/cdx_ig_5y.parquet, columns=all
-00:08:41 - macrocredit.persistence.parquet_io - INFO - Loaded 215 rows, 2 columns from data/cdx_ig_5y.parquet
+00:08:40 - aponyx.persistence.parquet_io - INFO - Saving DataFrame to Parquet: path=data/cdx_ig_5y.parquet, rows=215, columns=2, compression=snappy
+00:08:41 - aponyx.persistence.registry - INFO - Loaded existing registry: path=data/registry.json, datasets=4
+00:08:41 - aponyx.persistence.parquet_io - INFO - Loading Parquet file: path=data/cdx_ig_5y.parquet, columns=all
+00:08:41 - aponyx.persistence.parquet_io - INFO - Loaded 215 rows, 2 columns from data/cdx_ig_5y.parquet
 ```
 
 Clean, informative, and actionable.

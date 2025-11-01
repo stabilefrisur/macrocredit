@@ -13,7 +13,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import pandas as pd
-from macrocredit.data.sample_data import (
+from aponyx.data.sample_data import (
     generate_cdx_sample,
     generate_vix_sample,
     generate_etf_sample,

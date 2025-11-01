@@ -6,12 +6,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from macrocredit.models.signals import (
+from aponyx.models.signals import (
     compute_cdx_etf_basis,
     compute_cdx_vix_gap,
     compute_spread_momentum,
 )
-from macrocredit.models.config import SignalConfig
+from aponyx.models.config import SignalConfig
 
 
 @pytest.fixture

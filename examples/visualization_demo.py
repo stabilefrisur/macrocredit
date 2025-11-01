@@ -9,7 +9,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from macrocredit.visualization import (
+from aponyx.visualization import (
     Visualizer,
     plot_drawdown,
     plot_equity_curve,

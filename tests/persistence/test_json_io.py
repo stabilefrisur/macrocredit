@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import numpy as np
 
-from macrocredit.persistence.json_io import (
+from aponyx.persistence.json_io import (
     save_json,
     load_json,
     EnhancedJSONEncoder,

@@ -15,7 +15,7 @@ import pytest
 sys.modules["xbbg"] = MagicMock()
 sys.modules["xbbg.blp"] = MagicMock()
 
-from macrocredit.data.providers.bloomberg import (
+from aponyx.data.providers.bloomberg import (
     fetch_from_bloomberg,
     _map_bloomberg_fields,
     _add_metadata_columns,

@@ -494,7 +494,7 @@ wheels = [
 ]
 
 [[package]]
-name = "macrocredit"
+name = "aponyx"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

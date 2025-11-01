@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from macrocredit.backtest import (
+from aponyx.backtest import (
     BacktestConfig,
     run_backtest,
     compute_performance_metrics,

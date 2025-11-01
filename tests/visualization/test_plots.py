@@ -30,7 +30,7 @@ def sample_signal() -> pd.Series:
 
 def test_plot_equity_curve_returns_figure(sample_pnl: pd.Series) -> None:
     """Test that plot_equity_curve returns a Plotly figure."""
-    from macrocredit.visualization import plot_equity_curve
+    from aponyx.visualization import plot_equity_curve
 
     fig = plot_equity_curve(sample_pnl)
 
@@ -41,7 +41,7 @@ def test_plot_equity_curve_returns_figure(sample_pnl: pd.Series) -> None:
 
 def test_plot_equity_curve_with_drawdown_shading(sample_pnl: pd.Series) -> None:
     """Test equity curve with drawdown shading enabled."""
-    from macrocredit.visualization import plot_equity_curve
+    from aponyx.visualization import plot_equity_curve
 
     fig = plot_equity_curve(sample_pnl, show_drawdown_shading=True)
 
@@ -52,7 +52,7 @@ def test_plot_equity_curve_with_drawdown_shading(sample_pnl: pd.Series) -> None:
 
 def test_plot_signal_returns_figure(sample_signal: pd.Series) -> None:
     """Test that plot_signal returns a Plotly figure."""
-    from macrocredit.visualization import plot_signal
+    from aponyx.visualization import plot_signal
 
     fig = plot_signal(sample_signal)
 
@@ -63,7 +63,7 @@ def test_plot_signal_returns_figure(sample_signal: pd.Series) -> None:
 
 def test_plot_signal_with_thresholds(sample_signal: pd.Series) -> None:
     """Test signal plot with threshold lines."""
-    from macrocredit.visualization import plot_signal
+    from aponyx.visualization import plot_signal
 
     fig = plot_signal(sample_signal, threshold_lines=[-2, 2])
 
@@ -74,7 +74,7 @@ def test_plot_signal_with_thresholds(sample_signal: pd.Series) -> None:
 
 def test_plot_signal_custom_title(sample_signal: pd.Series) -> None:
     """Test signal plot with custom title."""
-    from macrocredit.visualization import plot_signal
+    from aponyx.visualization import plot_signal
 
     custom_title = "Custom Signal Title"
     fig = plot_signal(sample_signal, title=custom_title)
@@ -84,7 +84,7 @@ def test_plot_signal_custom_title(sample_signal: pd.Series) -> None:
 
 def test_plot_drawdown_returns_figure(sample_pnl: pd.Series) -> None:
     """Test that plot_drawdown returns a Plotly figure."""
-    from macrocredit.visualization import plot_drawdown
+    from aponyx.visualization import plot_drawdown
 
     fig = plot_drawdown(sample_pnl)
 
@@ -95,7 +95,7 @@ def test_plot_drawdown_returns_figure(sample_pnl: pd.Series) -> None:
 
 def test_plot_drawdown_percentage_mode(sample_pnl: pd.Series) -> None:
     """Test drawdown plot in percentage mode."""
-    from macrocredit.visualization import plot_drawdown
+    from aponyx.visualization import plot_drawdown
 
     fig = plot_drawdown(sample_pnl, show_underwater_chart=False)
 
@@ -106,7 +106,7 @@ def test_plot_drawdown_percentage_mode(sample_pnl: pd.Series) -> None:
 @pytest.mark.skip(reason="Plotly doesn't handle empty series well - edge case")
 def test_plot_equity_curve_empty_series() -> None:
     """Test equity curve with empty series."""
-    from macrocredit.visualization import plot_equity_curve
+    from aponyx.visualization import plot_equity_curve
 
     empty_series = pd.Series([], dtype=float, index=pd.DatetimeIndex([]))
     fig = plot_equity_curve(empty_series)
@@ -117,7 +117,7 @@ def test_plot_equity_curve_empty_series() -> None:
 
 def test_plot_signal_with_nans(sample_signal: pd.Series) -> None:
     """Test signal plot handles NaN values correctly."""
-    from macrocredit.visualization import plot_signal
+    from aponyx.visualization import plot_signal
 
     # Introduce some NaN values
     signal_with_nans = sample_signal.copy()
@@ -131,7 +131,7 @@ def test_plot_signal_with_nans(sample_signal: pd.Series) -> None:
 
 def test_visualizer_class_initialization() -> None:
     """Test Visualizer class can be instantiated."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer()
 
@@ -142,7 +142,7 @@ def test_visualizer_class_initialization() -> None:
 
 def test_visualizer_custom_theme() -> None:
     """Test Visualizer with custom theme."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer(theme="plotly_dark")
 
@@ -151,7 +151,7 @@ def test_visualizer_custom_theme() -> None:
 
 def test_visualizer_equity_curve(sample_pnl: pd.Series) -> None:
     """Test Visualizer.equity_curve method."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer()
     fig = viz.equity_curve(sample_pnl)
@@ -163,7 +163,7 @@ def test_visualizer_equity_curve(sample_pnl: pd.Series) -> None:
 
 def test_visualizer_signal(sample_signal: pd.Series) -> None:
     """Test Visualizer.signal method."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer()
     fig = viz.signal(sample_signal)
@@ -175,7 +175,7 @@ def test_visualizer_signal(sample_signal: pd.Series) -> None:
 
 def test_visualizer_drawdown(sample_pnl: pd.Series) -> None:
     """Test Visualizer.drawdown method."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer()
     fig = viz.drawdown(sample_pnl)
@@ -187,7 +187,7 @@ def test_visualizer_drawdown(sample_pnl: pd.Series) -> None:
 
 def test_visualizer_attribution_not_implemented() -> None:
     """Test that attribution raises NotImplementedError."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer()
     dummy_df = pd.DataFrame()
@@ -198,7 +198,7 @@ def test_visualizer_attribution_not_implemented() -> None:
 
 def test_visualizer_exposures_not_implemented() -> None:
     """Test that exposures raises NotImplementedError."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer()
     dummy_df = pd.DataFrame()
@@ -209,7 +209,7 @@ def test_visualizer_exposures_not_implemented() -> None:
 
 def test_visualizer_dashboard_not_implemented() -> None:
     """Test that dashboard raises NotImplementedError."""
-    from macrocredit.visualization import Visualizer
+    from aponyx.visualization import Visualizer
 
     viz = Visualizer()
     dummy_dict = {}
@@ -220,7 +220,7 @@ def test_visualizer_dashboard_not_implemented() -> None:
 
 def test_plot_equity_curve_cumulative_calculation(sample_pnl: pd.Series) -> None:
     """Test that equity curve correctly computes cumulative P&L."""
-    from macrocredit.visualization import plot_equity_curve
+    from aponyx.visualization import plot_equity_curve
 
     fig = plot_equity_curve(sample_pnl)
 
@@ -235,7 +235,7 @@ def test_plot_equity_curve_cumulative_calculation(sample_pnl: pd.Series) -> None
 
 def test_plot_drawdown_non_positive_values(sample_pnl: pd.Series) -> None:
     """Test that drawdown values are always non-positive."""
-    from macrocredit.visualization import plot_drawdown
+    from aponyx.visualization import plot_drawdown
 
     fig = plot_drawdown(sample_pnl)
 

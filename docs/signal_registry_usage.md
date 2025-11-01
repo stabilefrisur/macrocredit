@@ -10,15 +10,15 @@ The signal registry infrastructure enables scalable signal research by decouplin
 
 ```python
 from pathlib import Path
-from macrocredit.models import (
+from aponyx.models import (
     SignalRegistry,
     SignalConfig,
     compute_registered_signals,
 )
-from macrocredit.backtest import run_backtest, BacktestConfig
+from aponyx.backtest import run_backtest, BacktestConfig
 
 # Load signal catalog
-registry = SignalRegistry("src/macrocredit/models/signal_catalog.json")
+registry = SignalRegistry("src/aponyx/models/signal_catalog.json")
 
 # Prepare market data
 market_data = {
@@ -43,7 +43,7 @@ for signal_name, signal_series in signals.items():
 
 ### Step 1: Implement Compute Function
 
-Add to `src/macrocredit/models/signals.py`:
+Add to `src/aponyx/models/signals.py`:
 
 ```python
 def compute_my_new_signal(
@@ -73,7 +73,7 @@ def compute_my_new_signal(
 
 ### Step 2: Register in Catalog
 
-Edit `src/macrocredit/models/signal_catalog.json`:
+Edit `src/aponyx/models/signal_catalog.json`:
 
 ```json
 [
@@ -99,7 +99,7 @@ signals = compute_registered_signals(registry, market_data, config)
 # Now includes "my_new_signal"
 
 # Run backtest to evaluate performance
-from macrocredit.backtest import run_backtest, BacktestConfig
+from aponyx.backtest import run_backtest, BacktestConfig
 
 backtest_config = BacktestConfig(entry_threshold=1.5, exit_threshold=0.75)
 result = run_backtest(signals["my_new_signal"], cdx_df["spread"], backtest_config)
@@ -146,7 +146,7 @@ Set `"enabled": false` in catalog JSON, then reload registry.
 Run backtests for all enabled signals to compare performance:
 
 ```python
-from macrocredit.backtest import run_backtest, compute_performance_metrics, BacktestConfig
+from aponyx.backtest import run_backtest, compute_performance_metrics, BacktestConfig
 
 # Compute all enabled signals
 signals = compute_registered_signals(registry, market_data, signal_config)
@@ -182,7 +182,7 @@ signal = compute_registered_signals(registry, market_data, signal_config)["cdx_e
 result = run_backtest(signal, cdx_df["spread"], backtest_config)
 
 # Detailed analysis
-from macrocredit.visualization import plot_signal, plot_equity_curve, plot_drawdown
+from aponyx.visualization import plot_signal, plot_equity_curve, plot_drawdown
 
 plot_signal(signal, title="CDX-ETF Basis").show()
 plot_equity_curve(result.pnl).show()
@@ -233,7 +233,7 @@ for name in signal_names:
 The backtest layer accepts any signal series for independent evaluation:
 
 ```python
-from macrocredit.backtest import BacktestConfig, run_backtest, compute_performance_metrics
+from aponyx.backtest import BacktestConfig, run_backtest, compute_performance_metrics
 
 # Compute signals using registry
 signals = compute_registered_signals(registry, market_data, signal_config)
@@ -261,8 +261,8 @@ for signal_name, signal_series in signals.items():
 
 ```python
 import pytest
-from macrocredit.models.signals import compute_my_new_signal
-from macrocredit.models.config import SignalConfig
+from aponyx.models.signals import compute_my_new_signal
+from aponyx.models.config import SignalConfig
 
 def test_my_new_signal():
     # Generate test data
@@ -311,13 +311,13 @@ aligned_end = min(cdx_df.index.max(), etf_df.index.max())
 **Signal not appearing in compute_registered_signals output**
 ```python
 # Check if signal is enabled in catalog
-registry = SignalRegistry("src/macrocredit/models/signal_catalog.json")
+registry = SignalRegistry("src/aponyx/models/signal_catalog.json")
 catalog = registry.get_catalog()
 enabled_signals = [s for s in catalog if s["enabled"]]
 print(f"Enabled signals: {[s['name'] for s in enabled_signals]}")
 
 # Check if function exists
-from macrocredit.models import signals as sig_module
+from aponyx.models import signals as sig_module
 print(f"Has function: {hasattr(sig_module, 'compute_my_signal')}")
 ```
 
@@ -427,7 +427,7 @@ old_registry = SignalRegistry("archive/signal_catalog_2024_q3.json")
 old_signals = compute_registered_signals(old_registry, market_data, config)
 
 # Compare with current version
-new_registry = SignalRegistry("src/macrocredit/models/signal_catalog.json")
+new_registry = SignalRegistry("src/aponyx/models/signal_catalog.json")
 new_signals = compute_registered_signals(new_registry, market_data, config)
 
 # Backtest both for performance comparison
@@ -447,7 +447,7 @@ You can also call compute functions directly without the registry:
 
 ```python
 # Direct computation (bypassing registry)
-from macrocredit.models import (
+from aponyx.models import (
     compute_cdx_etf_basis,
     SignalConfig,
 )
@@ -456,7 +456,7 @@ config = SignalConfig(lookback=20, min_periods=10)
 signal = compute_cdx_etf_basis(cdx_df, etf_df, config)
 
 # Then backtest directly
-from macrocredit.backtest import run_backtest, BacktestConfig
+from aponyx.backtest import run_backtest, BacktestConfig
 
 bt_config = BacktestConfig(entry_threshold=1.5, exit_threshold=0.75)
 result = run_backtest(signal, cdx_df["spread"], bt_config)

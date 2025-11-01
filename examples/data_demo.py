@@ -26,7 +26,7 @@ Requirements:
 
 import logging
 
-from macrocredit.data import (
+from aponyx.data import (
     fetch_cdx,
     fetch_vix,
     fetch_etf,
